@@ -14,8 +14,8 @@ import biz.ostw.ee.config.ConfigService;
 /**
  * Servlet implementation class TestConfig
  */
-@WebServlet( "/TestAddConfig" )
-public class TestConfig extends HttpServlet
+@WebServlet( "/TestConfig" )
+public class TestAddConfig extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
@@ -25,9 +25,20 @@ public class TestConfig extends HttpServlet
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
         String name = request.getParameter( "name" );
-        String value = request.getParameter( "value" );
 
-        this.configService.put( name, value );
+        if ( name != null )
+        {
+            String value = request.getParameter( "value" );
+
+            if ( value != null )
+            {
+            } else
+            {
+                Object object = this.configService.get( name, "NULL" );
+
+                response.getWriter().write( String.valueOf( object ) );
+            }
+        }
     }
 
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException

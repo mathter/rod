@@ -11,11 +11,13 @@ public class ConvertorNotFound extends RuntimeException
 
     public ConvertorNotFound( Class< ? > clazz )
     {
+        super( "Convertor for class " + clazz + " not found!" );
         this.name = clazz.toString();
     }
 
     public ConvertorNotFound( String name )
     {
+        super( "Convertor for type '" + name + "' not found!" );
         this.name = name;
     }
 

@@ -12,7 +12,7 @@ public class ShortConvertor implements Convertor< Short >
     }
 
     @Override
-    public CharSequence from( Short value )
+    public String from( Short value )
     {
         return value.toString();
     }

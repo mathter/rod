@@ -12,7 +12,7 @@ public class StringConvertor implements Convertor< String >
     }
 
     @Override
-    public CharSequence from( String value )
+    public String from( String value )
     {
         return value;
     }

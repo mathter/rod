@@ -12,7 +12,7 @@ public class DoubleConvertor implements Convertor< Double >
     }
 
     @Override
-    public CharSequence from( Double value )
+    public String from( Double value )
     {
         return value.toString();
     }

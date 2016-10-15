@@ -12,7 +12,7 @@ public class FloatConvertor implements Convertor< Float >
     }
 
     @Override
-    public CharSequence from( Float value )
+    public String from( Float value )
     {
         return value.toString();
     }

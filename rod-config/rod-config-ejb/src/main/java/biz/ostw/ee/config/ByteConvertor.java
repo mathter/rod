@@ -12,7 +12,7 @@ public class ByteConvertor implements Convertor< Byte >
     }
 
     @Override
-    public CharSequence from( Byte value )
+    public String from( Byte value )
     {
         return value.toString();
     }

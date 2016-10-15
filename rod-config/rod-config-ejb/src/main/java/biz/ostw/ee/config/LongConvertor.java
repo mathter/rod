@@ -12,7 +12,7 @@ public class LongConvertor implements Convertor< Long >
     }
 
     @Override
-    public CharSequence from( Long value )
+    public String from( Long value )
     {
         return value.toString();
     }

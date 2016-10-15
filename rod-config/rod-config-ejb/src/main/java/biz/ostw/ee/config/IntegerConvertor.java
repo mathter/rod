@@ -12,7 +12,7 @@ public class IntegerConvertor implements Convertor< Integer >
     }
 
     @Override
-    public CharSequence from( Integer value )
+    public String from( Integer value )
     {
         return value.toString();
     }

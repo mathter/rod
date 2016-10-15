@@ -22,7 +22,7 @@ public class Type< T >
         }
 
         this.name = name;
-        this.clazz = null;
+        this.clazz = clazz;
     }
 
     public String getName()
