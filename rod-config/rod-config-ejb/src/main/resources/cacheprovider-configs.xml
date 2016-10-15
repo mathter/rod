@@ -1,0 +1,19 @@
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:infinispan:config:8.1 http://www.infinispan.org/schemas/infinispan-config-8.1.xsd"
+	xmlns="urn:infinispan:config:8.1">
+
+	<cache-container default-cache="default" statistics="true">
+		<local-cache name="entity" statistics="true">
+			<eviction max-entries="1" size="1" strategy="FIFO" />
+			<expiration interval="1000" max-idle="1" lifespan="1" />
+		</local-cache>
+		<local-cache name="eee" statistics="true">
+			<eviction max-entries="1" size="1" strategy="FIFO" />
+			<expiration interval="1000" max-idle="10000" lifespan="10000" />
+
+		</local-cache>
+	</cache-container>
+
+</infinispan>
+
+

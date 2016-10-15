@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+	<application>
+		<action-listener>org.primefaces.application.DialogActionListener</action-listener>
+		<navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
+		<view-handler>org.primefaces.application.DialogViewHandler</view-handler>
+		<locale-config>
+			<default-locale>ru</default-locale>
+		</locale-config>
+		<el-resolver>org.primefaces.application.exceptionhandler.PrimeExceptionHandlerELResolver</el-resolver>
+		<resource-bundle>
+			<base-name>biz.ostw.rod.site.Msg</base-name>
+			<var>msg</var>
+		</resource-bundle>
+	</application>
+	<factory>
+		<exception-handler-factory>org.primefaces.application.exceptionhandler.PrimeExceptionHandlerFactory</exception-handler-factory>
+	</factory>
+	<lifecycle>
+		<phase-listener>org.primefaces.component.lifecycle.LifecyclePhaseListener</phase-listener>
+	</lifecycle>
+	
+	<navigation-rule>
+		<from-view-id>registration.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>account</from-outcome>
+			<to-view-id>index.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>account</from-outcome>
+			<to-view-id>account.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>confirmpage</from-outcome>
+			<to-view-id>confirmpage.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+</faces-config>

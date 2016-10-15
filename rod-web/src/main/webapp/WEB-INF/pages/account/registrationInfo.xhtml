@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<body>
+	<div style="width: 100%">
+		<h:form id="registrationForm">
+			<p:messages id="messages" showSummary="true" />
+
+			<p:panel id="authDataPanel"
+				header="${msg['fragment.registrationInfo.authDataPanel.title']}">
+				<h:panelGrid columns="2">
+					<p:outputLabel
+						value="${msg['fragment.registrationInfo.authDataPanel.login']}"
+						for="login" />
+					<p:inputText id="login" required="true"
+						value="${registrationInfoBean.registrationInfo.login}">
+						<f:validator binding="${userExistsValidator}" />
+					</p:inputText>
+
+					<p:outputLabel
+						value="${msg['fragment.registrationInfo.authDataPanel.password']}"
+						for="password" />
+
+					<p:password id="password"
+						value="${registrationInfoBean.registrationInfo.password}">
+						<f:validator binding="${passwordValidator}" />
+						<f:attribute name="repeatPassword"
+							value="${repeatPassword.submittedValue}" />
+					</p:password>
+
+					<p:outputLabel
+						value="${msg['fragment.registrationInfo.authDataPanel.repeatPassword']}"
+						for="repeatPassword" />
+
+					<p:password id="repeatPassword" binding="${repeatPassword}"
+						value="${registrationInfoBean.registrationInfo.repeatPassword}" />
+				</h:panelGrid>
+			</p:panel>
+			<p:spacer />
+			<p:panel id="contactDataPanel"
+				header="${msg['fragment.registrationInfo.contactDataPanel.title']}">
+				<table>
+					<tr>
+						<td><h:outputText
+								value="${registrationInfoBean.registrationInfo.emailChannel.channelType.name}" /></td>
+						<td><p:inputText
+								value="${registrationInfoBean.registrationInfo.emailChannel.value}"
+								required="true" /></td>
+					</tr>
+					<ui:repeat var="channel"
+						value="${registrationInfoBean.registrationInfo.channels}"
+						varStatus="status">
+						<tr>
+							<td><h:outputLabel value="${channel.channelType.name}" /></td>
+							<td><p:inputText value="${channel.value}"
+									label="${channel.channelType.name}" /></td>
+							<td><p:commandLink process="@this"
+									rendered="${channel.channelType.name != 'email'}"
+									action="${registrationInfoBean.registrationInfo.removeChannel(channel)}"
+									update=":registrationForm:contactDataPanel"
+									value="${msg['fragment.registrationInfo.contactDataPanel.removeChanel.title']}" /></td>
+						</tr>
+					</ui:repeat>
+				</table>
+				<h:panelGrid columns="3">
+					<p:selectOneMenu id="channelType" binding="${channelType}"
+						label="${msg['fragment.registrationInfo.contactDataPanel.selectChannelType.noselection']}"
+						converter="${channelTypeConverter}">
+						<p:ajax update=":registrationForm:contactDataPanel" />
+						<f:selectItem
+							itemLabel="${msg['fragment.registrationInfo.contactDataPanel.selectChannelType.noselection']}"
+							itemValue="${null}" noSelectionOption="true" />
+						<f:selectItems
+							value="${registrationInfoBean.registrationInfo.getChannelTypes()}"
+							var="item" itemLabel="${item.name}" itemValue="${item}" />
+					</p:selectOneMenu>
+
+					<p:inputText id="channelValue" binding="${channelValue}"
+						label="${msg['fragment.registrationInfo.contactDataPanel.channelValue']}" />
+
+					<p:commandLink
+						value="${msg['fragment.registrationInfo.contactDataPanel.addChanel.title']}"
+						process="channelType, channelValue, @this"
+						action="${registrationInfoBean.registrationInfo.addChannel(channelType.value, channelValue.value)}"
+						update="contactDataPanel,messages" />
+				</h:panelGrid>
+			</p:panel>
+			<p:commandLink value="${msg['fragment.registrationInfo.submite']}"
+				action="${registrationInfoBean.registrationInfo.submite()}"
+				update="registrationForm" />
+		</h:form>
+	</div>
+</body>
+</html>
