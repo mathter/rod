@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import biz.ostw.rod.tools.PasswordGenerator;
+import biz.ostw.rod.user.ConfirmRegistrationService;
 import biz.ostw.rod.user.Role;
 import biz.ostw.rod.user.User;
 import biz.ostw.rod.user.UserRepository;
@@ -31,234 +32,203 @@ import biz.ostw.rod.user.channel.ChannelType;
  */
 @Named
 @Dependent
-public class RegistrationInfo
-{
-    private static final Logger LOG = LoggerFactory.getLogger( RegistrationInfo.class );
+public class RegistrationInfo {
+	private static final Logger LOG = LoggerFactory.getLogger(RegistrationInfo.class);
 
-    private static final Comparator< ChannelType > CHANNEL_TYPE_COMPARATOR = new Comparator< ChannelType >()
-    {
-        @Override
-        public int compare( ChannelType left, ChannelType right )
-        {
-            return left.getName().compareTo( right.getName() );
-        }
-    };
+	private static final Comparator<ChannelType> CHANNEL_TYPE_COMPARATOR = new Comparator<ChannelType>() {
+		@Override
+		public int compare(ChannelType left, ChannelType right) {
+			return left.getName().compareTo(right.getName());
+		}
+	};
 
-    @EJB
-    private ChannelService channelService;
+	@EJB
+	private ChannelService channelService;
 
-    @EJB
-    private UserRepository userRepository;
+	@EJB
+	private UserRepository userRepository;
 
-    /* User */
-    private User user;
+	@EJB
+	private ConfirmRegistrationService confirmRegistrationService;
 
-    /* Authentication */
-    private String login;
+	/* User */
+	private User user;
 
-    private String password;
+	/* Authentication */
+	private String login;
 
-    private String repeatPassword;
+	private String password;
 
-    /* Channels */
+	private String repeatPassword;
 
-    private Channel emailChannel;
+	/* Channels */
 
-    private List< Channel > channels;
+	private Channel emailChannel;
 
-    private List< ChannelType > channelTypes;
+	private List<Channel> channels;
 
-    @PostConstruct
-    private void init()
-    {
-        Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+	private List<ChannelType> channelTypes;
 
-        if ( principal == null )
-        {
-            LOG.debug( "Init for new user" );
+	@PostConstruct
+	private void init() {
+		Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
 
-            this.user = new User();
-            this.channels = new ArrayList<>();
-            this.emailChannel = this.getEmptyEmailChannel();
-        } else
-        {
-            this.user = this.userRepository.get( principal.getName() );
-            this.login = user.getLogin();
-            this.channels = this.channelService.get( this.user );
+		if (principal == null) {
+			LOG.debug("Init for new user");
 
-            Iterator< Channel > iterator = this.channels.iterator();
-            ChannelType emailChannelType = this.channelService.getEmailChannelType();
+			this.user = new User();
+			this.channels = new ArrayList<>();
+			this.emailChannel = this.getEmptyEmailChannel();
+		} else {
+			this.user = this.userRepository.get(principal.getName());
+			this.login = user.getLogin();
+			this.channels = this.channelService.get(this.user);
 
-            while ( iterator.hasNext() )
-            {
-                Channel channel = iterator.next();
+			Iterator<Channel> iterator = this.channels.iterator();
+			ChannelType emailChannelType = this.channelService.getEmailChannelType();
 
-                if ( emailChannelType.equals( channel.getChannelType() ) )
-                {
-                    this.emailChannel = channel;
-                    iterator.remove();
-                    break;
-                }
+			while (iterator.hasNext()) {
+				Channel channel = iterator.next();
 
-                if ( this.emailChannel == null )
-                {
-                    this.emailChannel = this.getEmptyEmailChannel();
-                }
-            }
-        }
+				if (emailChannelType.equals(channel.getChannelType())) {
+					this.emailChannel = channel;
+					iterator.remove();
+					break;
+				}
 
-        this.channelTypes = this.channelService.geChannelTypes();
-        this.channelTypes.remove( this.channelService.getEmailChannelType() );
+				if (this.emailChannel == null) {
+					this.emailChannel = this.getEmptyEmailChannel();
+				}
+			}
+		}
 
-    }
+		this.channelTypes = this.channelService.geChannelTypes();
+		this.channelTypes.remove(this.channelService.getEmailChannelType());
 
-    public void addChannel( ChannelType channelType, String chanelValue )
-    {
-        if ( channelType != null && chanelValue != null )
-        {
-            Channel channel = new Channel();
-            channel.setChannelType( channelType );
-            channel.setValue( chanelValue );
-            channel.setUser( this.user );
+	}
 
-            this.channels.add( channel );
-            this.channelTypes.remove( channelType );
-        } else
-        {
-            LOG.warn( "Bad parameters: channelType='{}', channelValue='{}'", channelType, chanelValue );
-        }
-    }
+	public void addChannel(ChannelType channelType, String chanelValue) {
+		if (channelType != null && chanelValue != null) {
+			Channel channel = new Channel();
+			channel.setChannelType(channelType);
+			channel.setValue(chanelValue);
+			channel.setUser(this.user);
 
-    public void removeChannel( Channel channel )
-    {
-        Iterator< Channel > iterator = this.channels.iterator();
+			this.channels.add(channel);
+			this.channelTypes.remove(channelType);
+		} else {
+			LOG.warn("Bad parameters: channelType='{}', channelValue='{}'", channelType, chanelValue);
+		}
+	}
 
-        while ( iterator.hasNext() )
-        {
-            Channel channel2 = iterator.next();
+	public void removeChannel(Channel channel) {
+		Iterator<Channel> iterator = this.channels.iterator();
 
-            if ( channel.getChannelType().equals( channel2.getChannelType() ) )
-            {
-                iterator.remove();
-                this.channelTypes.add( channel.getChannelType() );
+		while (iterator.hasNext()) {
+			Channel channel2 = iterator.next();
 
-                if ( channel2.getSystemId() != null )
-                {
-                    this.channelService.remove( channel2 );
-                }
-            } ;
-        }
-    }
+			if (channel.getChannelType().equals(channel2.getChannelType())) {
+				iterator.remove();
+				this.channelTypes.add(channel.getChannelType());
 
-    @Transactional( TxType.REQUIRES_NEW )
-    public String submite() throws Exception
-    {
-        try
-        {
-            User user;
-            Role role = this.userRepository.getRegisteredRole();
+				if (channel2.getSystemId() != null) {
+					this.channelService.remove(channel2);
+				}
+			}
+			;
+		}
+	}
 
-            Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+	@Transactional(TxType.REQUIRES_NEW)
+	public String submite() throws Exception {
+		try {
+			User user;
+			Role role = this.userRepository.getRegisteredRole();
 
-            if ( principal == null )
-            {
-                user = new User();
-                user.setPassword( PasswordGenerator.generate( this.password ) );
-            } else
-            {
-                user = this.userRepository.get( this.login );
+			Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
 
-                if ( this.password != null && !this.password.isEmpty() )
-                {
-                    user.setPassword( PasswordGenerator.generate( this.password ) );
-                }
-            }
+			if (principal == null) {
+				user = new User();
+				user.setPassword(PasswordGenerator.generate(this.password));
+			} else {
+				user = this.userRepository.get(this.login);
 
-            user.setLogin( this.login );
-            user.setRoles( Collections.singleton( role ) );
-            user = this.userRepository.put( user );
+				if (this.password != null && !this.password.isEmpty()) {
+					user.setPassword(PasswordGenerator.generate(this.password));
+				}
+			}
 
-            this.emailChannel.setUser( user );
-            this.channelService.put( this.emailChannel );
+			user.setLogin(this.login);
+			user.setRoles(Collections.singleton(role));
+			user = this.userRepository.put(user);
 
-            for ( Channel channel : this.channels )
-            {
-                channel.setUser( user );
-                this.channelService.put( channel );
-            }
+			this.emailChannel.setUser(user);
+			this.channelService.put(this.emailChannel);
 
-            if ( principal == null )
-            {
-                return "confirmpage";
-            } else
-            {
-                return "account";
-            }
+			for (Channel channel : this.channels) {
+				channel.setUser(user);
+				this.channelService.put(channel);
+			}
 
-        } catch ( Exception e )
-        {
-            LOG.error( "Cant' create user!" );
-            throw e;
-        }
-    }
+			if (principal == null) {
+				this.confirmRegistrationService.newInstance(user);
+				return "confirmpage";
+			} else {
+				return "account";
+			}
 
-    public Channel getEmailChannel()
-    {
-        return emailChannel;
-    }
+		} catch (Exception e) {
+			LOG.error("Cant' create user!");
+			throw e;
+		}
+	}
 
-    public void setEmailChannel( Channel emailChannel )
-    {
-        this.emailChannel = emailChannel;
-    }
+	public Channel getEmailChannel() {
+		return emailChannel;
+	}
 
-    public String getLogin()
-    {
-        return login;
-    }
+	public void setEmailChannel(Channel emailChannel) {
+		this.emailChannel = emailChannel;
+	}
 
-    public void setLogin( String login )
-    {
-        this.login = login;
-    }
+	public String getLogin() {
+		return login;
+	}
 
-    public String getPassword()
-    {
-        return password;
-    }
+	public void setLogin(String login) {
+		this.login = login;
+	}
 
-    public void setPassword( String password )
-    {
-        this.password = password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public String getRepeatPassword()
-    {
-        return repeatPassword;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setRepeatPassword( String repeatPassword )
-    {
-        this.repeatPassword = repeatPassword;
-    }
+	public String getRepeatPassword() {
+		return repeatPassword;
+	}
 
-    public List< Channel > getChannels()
-    {
-        return this.channels;
-    }
+	public void setRepeatPassword(String repeatPassword) {
+		this.repeatPassword = repeatPassword;
+	}
 
-    public List< ChannelType > getChannelTypes()
-    {
-        Collections.sort( this.channelTypes, CHANNEL_TYPE_COMPARATOR );
+	public List<Channel> getChannels() {
+		return this.channels;
+	}
 
-        return this.channelTypes;
-    }
+	public List<ChannelType> getChannelTypes() {
+		Collections.sort(this.channelTypes, CHANNEL_TYPE_COMPARATOR);
 
-    private Channel getEmptyEmailChannel()
-    {
-        Channel channel = new Channel();
-        channel.setChannelType( this.channelService.getEmailChannelType() );
+		return this.channelTypes;
+	}
 
-        return channel;
-    }
+	private Channel getEmptyEmailChannel() {
+		Channel channel = new Channel();
+		channel.setChannelType(this.channelService.getEmailChannelType());
+
+		return channel;
+	}
 }

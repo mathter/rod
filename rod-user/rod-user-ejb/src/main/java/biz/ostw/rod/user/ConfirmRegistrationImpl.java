@@ -17,70 +17,63 @@ import biz.ostw.persistence.jpa.AbstractJPARepository;
 /**
  * @author mathter
  */
-@Remote( ConfirmRegistrationService.class )
+@Remote(ConfirmRegistrationService.class)
 @Stateless
-public class ConfirmRegistrationImpl extends AbstractJPARepository implements ConfirmRegistrationService
-{
-    @PersistenceContext( name = "biz.ostw.rod.user" )
-    private EntityManager em;
+public class ConfirmRegistrationImpl extends AbstractJPARepository implements ConfirmRegistrationService {
+	@PersistenceContext(name = "biz.ostw.rod.user")
+	private EntityManager em;
 
-    @EJB
-    private UserRepository userRepository;
+	@EJB
+	private UserRepository userRepository;
 
-    @Override
-    @Transactional( TxType.REQUIRED )
-    public ConfirmRegistration newInstance( User user )
-    {
-        ConfirmRegistration entity = new ConfirmRegistration();
+	@Override
+	@Transactional(TxType.REQUIRED)
+	public ConfirmRegistration newInstance(User user) {
+		ConfirmRegistration entity = new ConfirmRegistration();
 
-        entity.setUuid( UUID.randomUUID() );
-        entity = this.put( entity );
-        entity.setUser( user );
-        entity.setDate( new Date() );
+		entity.setUuid(UUID.randomUUID());
+		entity = this.put(entity);
+		entity.setUser(user);
+		entity.setDate(new Date());
 
-        return entity;
-    }
+		entity = this.em.merge(entity);
 
-    @Override
-    @Transactional( TxType.REQUIRED )
-    public void confirm( UUID uuid )
-    {
-        ConfirmRegistration confirmRegistration = this.get( ConfirmRegistration.class, uuid );
+		return entity;
+	}
 
-        if ( confirmRegistration != null )
-        {
-            User user = confirmRegistration.getUser();
+	@Override
+	@Transactional(TxType.REQUIRED)
+	public void confirm(UUID uuid) {
+		ConfirmRegistration confirmRegistration = this.get(ConfirmRegistration.class, uuid);
 
-            if ( user != null )
-            {
-                confirmRegistration.setComplete( true );
-                user.getAccessInfo().setRegistered( true );
-                
-                this.put( confirmRegistration );
-                this.put( user );
-            } else
-            {
-                throw new IllegalStateException( "There is no user for '" + uuid + "'!" );
-            }
-        } else
-        {
-            throw new IllegalStateException( "There is no entry for '" + uuid + "'!" );
-        }
-    }
+		if (confirmRegistration != null) {
+			User user = confirmRegistration.getUser();
 
-    @Override
-    @Transactional( TxType.REQUIRED )
-    public void remove( UUID uuid )
-    {
-        Query query = this.em.createNamedQuery( "ConfirmRegistration_remove" );
-        query.setParameter( "uuid", uuid );
-        
-        query.executeUpdate();
-    }
+			if (user != null) {
+				confirmRegistration.setComplete(true);
+				user.getAccessInfo().setRegistered(true);
 
-    @Override
-    protected EntityManager getEntityManager()
-    {
-        return this.em;
-    }
+				this.put(confirmRegistration);
+				this.put(user);
+			} else {
+				throw new IllegalStateException("There is no user for '" + uuid + "'!");
+			}
+		} else {
+			throw new IllegalStateException("There is no entry for '" + uuid + "'!");
+		}
+	}
+
+	@Override
+	@Transactional(TxType.REQUIRED)
+	public void remove(UUID uuid) {
+		Query query = this.em.createNamedQuery("ConfirmRegistration_remove");
+		query.setParameter("uuid", uuid);
+
+		query.executeUpdate();
+	}
+
+	@Override
+	protected EntityManager getEntityManager() {
+		return this.em;
+	}
 }
