@@ -3,9 +3,11 @@ package biz.ostw.rod.user;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.mail.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -22,6 +24,9 @@ import biz.ostw.persistence.jpa.AbstractJPARepository;
 public class ConfirmRegistrationImpl extends AbstractJPARepository implements ConfirmRegistrationService {
 	@PersistenceContext(name = "biz.ostw.rod.user")
 	private EntityManager em;
+
+	@Resource(mappedName = "java:/mail/rod")
+	private Session mailSession;
 
 	@EJB
 	private UserRepository userRepository;

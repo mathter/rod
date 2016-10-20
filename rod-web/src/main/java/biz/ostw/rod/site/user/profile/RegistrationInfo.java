@@ -8,10 +8,17 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.enterprise.context.Dependent;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -69,6 +76,9 @@ public class RegistrationInfo {
 
 	private List<ChannelType> channelTypes;
 
+	@Resource(mappedName = "java:/mail/rod")
+	private Session mailSession;
+
 	@PostConstruct
 	private void init() {
 		Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
@@ -104,6 +114,17 @@ public class RegistrationInfo {
 
 		this.channelTypes = this.channelService.geChannelTypes();
 		this.channelTypes.remove(this.channelService.getEmailChannelType());
+
+		try {
+			MimeMessage m = new MimeMessage(this.mailSession);
+			m.setRecipients(Message.RecipientType.TO, "kavg@ngs.ru");
+			m.setSender(new InternetAddress("wildflymail@mail.ru"));
+			m.setContent("Test from Wildfly", "text/plain");
+
+			Transport.send(m);
+		} catch (Exception e) {
+			LOG.error("dd", e);
+		}
 
 	}
 
