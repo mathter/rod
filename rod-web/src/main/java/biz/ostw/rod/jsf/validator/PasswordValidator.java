@@ -29,7 +29,7 @@ public class PasswordValidator implements Validator
 
         if ( principal == null )
         {
-            if ( password == null || !password.equals( repeatPassword ) )
+            if ( password == null || password.equals( "" ) || !password.equals( repeatPassword ) )
             {
                 this.fireError();
             }

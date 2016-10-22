@@ -22,5 +22,7 @@ public interface ChannelService extends Repository
 
     public List< Channel > get( User user );
 
+    public Channel getEmailChannel( User user );
+
     public ChannelType getEmailChannelType();
 }

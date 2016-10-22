@@ -106,6 +106,10 @@
 			<artifactId>rod-config-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>rod-connecting-api</groupId>
+			<artifactId>rod-connecting-api</artifactId>
+		</dependency>
 	</dependencies>
 
 

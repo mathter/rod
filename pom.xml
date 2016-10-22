@@ -23,6 +23,7 @@
 		<module>rod-ear</module>
 		<module>rod-tools</module>
 		<module>rod-config</module>
+		<module>rod-connecting</module>
 	</modules>
 
 	<dependencyManagement>
@@ -187,6 +188,17 @@
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-infinispan</artifactId>
 				<version>5.2.3.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>rod-connecting-api</groupId>
+				<artifactId>rod-connecting-api</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>rod-connecting-ejb</groupId>
+				<artifactId>rod-connecting-ejb</artifactId>
+				<version>0.0.1</version>
+				<type>ejb</type>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

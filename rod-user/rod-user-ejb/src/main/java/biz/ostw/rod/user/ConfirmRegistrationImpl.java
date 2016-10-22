@@ -3,11 +3,9 @@ package biz.ostw.rod.user;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.mail.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -15,70 +13,88 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import biz.ostw.persistence.jpa.AbstractJPARepository;
+import biz.ostw.rod.connecting.MessageService;
+import biz.ostw.rod.user.channel.Channel;
+import biz.ostw.rod.user.channel.ChannelService;
 
 /**
  * @author mathter
  */
-@Remote(ConfirmRegistrationService.class)
+@Remote( ConfirmRegistrationService.class )
 @Stateless
-public class ConfirmRegistrationImpl extends AbstractJPARepository implements ConfirmRegistrationService {
-	@PersistenceContext(name = "biz.ostw.rod.user")
-	private EntityManager em;
+public class ConfirmRegistrationImpl extends AbstractJPARepository implements ConfirmRegistrationService
+{
+    @PersistenceContext( name = "biz.ostw.rod.user" )
+    private EntityManager em;
 
-	@Resource(mappedName = "java:/mail/rod")
-	private Session mailSession;
+    @EJB
+    private UserRepository userRepository;
 
-	@EJB
-	private UserRepository userRepository;
+    @EJB
+    private ChannelService channelService;
 
-	@Override
-	@Transactional(TxType.REQUIRED)
-	public ConfirmRegistration newInstance(User user) {
-		ConfirmRegistration entity = new ConfirmRegistration();
+    @EJB
+    private MessageService messageService;
 
-		entity.setUuid(UUID.randomUUID());
-		entity = this.put(entity);
-		entity.setUser(user);
-		entity.setDate(new Date());
+    @Override
+    @Transactional( TxType.REQUIRED )
+    public ConfirmRegistration newInstance( User user )
+    {
+        ConfirmRegistration entity = new ConfirmRegistration();
 
-		entity = this.em.merge(entity);
+        entity.setUuid( UUID.randomUUID() );
+        entity.setUser( user );
+        entity.setDate( new Date() );
 
-		return entity;
-	}
+        entity = this.em.merge( entity );
+        
+        Channel emailChannel = this.channelService.getEmailChannel( user );
 
-	@Override
-	@Transactional(TxType.REQUIRED)
-	public void confirm(UUID uuid) {
-		ConfirmRegistration confirmRegistration = this.get(ConfirmRegistration.class, uuid);
+        this.messageService.send( emailChannel, "Registration", "Content" );
 
-		if (confirmRegistration != null) {
-			User user = confirmRegistration.getUser();
+        return entity;
+    }
 
-			if (user != null) {
-				confirmRegistration.setComplete(true);
-				user.getAccessInfo().setRegistered(true);
+    @Override
+    @Transactional( TxType.REQUIRED )
+    public void confirm( UUID uuid )
+    {
+        ConfirmRegistration confirmRegistration = this.get( ConfirmRegistration.class, uuid );
 
-				this.put(confirmRegistration);
-				this.put(user);
-			} else {
-				throw new IllegalStateException("There is no user for '" + uuid + "'!");
-			}
-		} else {
-			throw new IllegalStateException("There is no entry for '" + uuid + "'!");
-		}
-	}
+        if ( confirmRegistration != null )
+        {
+            User user = confirmRegistration.getUser();
 
-	@Override
-	@Transactional(TxType.REQUIRED)
-	public void remove(UUID uuid) {
-		Query query = this.em.createNamedQuery("ConfirmRegistration_remove");
-		query.setParameter("uuid", uuid);
+            if ( user != null )
+            {
+                confirmRegistration.setComplete( true );
+                user.getAccessInfo().setRegistered( true );
 
-		query.executeUpdate();
-	}
+                this.put( confirmRegistration );
+                user = this.put( user );
+            } else
+            {
+                throw new IllegalStateException( "There is no user for '" + uuid + "'!" );
+            }
+        } else
+        {
+            throw new IllegalStateException( "There is no entry for '" + uuid + "'!" );
+        }
+    }
 
-	@Override
-	protected EntityManager getEntityManager() {
-		return this.em;
-	}
+    @Override
+    @Transactional( TxType.REQUIRED )
+    public void remove( UUID uuid )
+    {
+        Query query = this.em.createNamedQuery( "ConfirmRegistration_remove" );
+        query.setParameter( "uuid", uuid );
+
+        query.executeUpdate();
+    }
+
+    @Override
+    protected EntityManager getEntityManager()
+    {
+        return this.em;
+    }
 }

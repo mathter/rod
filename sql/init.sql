@@ -21,3 +21,6 @@ insert into config_types (id, name) values (nextval('config_types_seq'), 'long')
 insert into config_types (id, name) values (nextval('config_types_seq'), 'float');
 insert into config_types (id, name) values (nextval('config_types_seq'), 'double');
 insert into config_types (id, name) values (nextval('config_types_seq'), 'string');
+
+
+insert into config_records (key, value, config_type_id) values ('biz.oswt.rod.connecting.from.email', 'wildflymail@mail.ru', (select id from config_types where name = 'string'));

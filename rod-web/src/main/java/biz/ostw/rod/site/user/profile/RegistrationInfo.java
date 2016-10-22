@@ -8,17 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.enterprise.context.Dependent;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -39,217 +32,237 @@ import biz.ostw.rod.user.channel.ChannelType;
  */
 @Named
 @Dependent
-public class RegistrationInfo {
-	private static final Logger LOG = LoggerFactory.getLogger(RegistrationInfo.class);
+public class RegistrationInfo
+{
+    private static final Logger LOG = LoggerFactory.getLogger( RegistrationInfo.class );
 
-	private static final Comparator<ChannelType> CHANNEL_TYPE_COMPARATOR = new Comparator<ChannelType>() {
-		@Override
-		public int compare(ChannelType left, ChannelType right) {
-			return left.getName().compareTo(right.getName());
-		}
-	};
+    private static final Comparator< ChannelType > CHANNEL_TYPE_COMPARATOR = new Comparator< ChannelType >()
+    {
+        @Override
+        public int compare( ChannelType left, ChannelType right )
+        {
+            return left.getName().compareTo( right.getName() );
+        }
+    };
 
-	@EJB
-	private ChannelService channelService;
+    @EJB
+    private ChannelService channelService;
 
-	@EJB
-	private UserRepository userRepository;
+    @EJB
+    private UserRepository userRepository;
 
-	@EJB
-	private ConfirmRegistrationService confirmRegistrationService;
+    @EJB
+    private ConfirmRegistrationService confirmRegistrationService;
 
-	/* User */
-	private User user;
+    /* User */
+    private User user;
 
-	/* Authentication */
-	private String login;
+    /* Authentication */
+    private String login;
 
-	private String password;
+    private String password;
 
-	private String repeatPassword;
+    private String repeatPassword;
 
-	/* Channels */
+    /* Channels */
 
-	private Channel emailChannel;
+    private Channel emailChannel;
 
-	private List<Channel> channels;
+    private List< Channel > channels;
 
-	private List<ChannelType> channelTypes;
+    private List< ChannelType > channelTypes;
 
-	@Resource(mappedName = "java:/mail/rod")
-	private Session mailSession;
+    @PostConstruct
+    private void init()
+    {
+        Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
 
-	@PostConstruct
-	private void init() {
-		Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        if ( principal == null )
+        {
+            LOG.debug( "Init for new user" );
 
-		if (principal == null) {
-			LOG.debug("Init for new user");
+            this.user = new User();
+            this.channels = new ArrayList<>();
+            this.emailChannel = this.getEmptyEmailChannel();
+        } else
+        {
+            this.user = this.userRepository.get( principal.getName() );
+            this.login = user.getLogin();
+            this.channels = this.channelService.get( this.user );
 
-			this.user = new User();
-			this.channels = new ArrayList<>();
-			this.emailChannel = this.getEmptyEmailChannel();
-		} else {
-			this.user = this.userRepository.get(principal.getName());
-			this.login = user.getLogin();
-			this.channels = this.channelService.get(this.user);
+            Iterator< Channel > iterator = this.channels.iterator();
+            ChannelType emailChannelType = this.channelService.getEmailChannelType();
 
-			Iterator<Channel> iterator = this.channels.iterator();
-			ChannelType emailChannelType = this.channelService.getEmailChannelType();
+            while ( iterator.hasNext() )
+            {
+                Channel channel = iterator.next();
 
-			while (iterator.hasNext()) {
-				Channel channel = iterator.next();
+                if ( emailChannelType.equals( channel.getChannelType() ) )
+                {
+                    this.emailChannel = channel;
+                    iterator.remove();
+                    break;
+                }
 
-				if (emailChannelType.equals(channel.getChannelType())) {
-					this.emailChannel = channel;
-					iterator.remove();
-					break;
-				}
+                if ( this.emailChannel == null )
+                {
+                    this.emailChannel = this.getEmptyEmailChannel();
+                }
+            }
+        }
 
-				if (this.emailChannel == null) {
-					this.emailChannel = this.getEmptyEmailChannel();
-				}
-			}
-		}
+        this.channelTypes = this.channelService.geChannelTypes();
+        this.channelTypes.remove( this.channelService.getEmailChannelType() );
+    }
 
-		this.channelTypes = this.channelService.geChannelTypes();
-		this.channelTypes.remove(this.channelService.getEmailChannelType());
+    public void addChannel( ChannelType channelType, String chanelValue )
+    {
+        if ( channelType != null && chanelValue != null )
+        {
+            Channel channel = new Channel();
+            channel.setChannelType( channelType );
+            channel.setValue( chanelValue );
+            channel.setUser( this.user );
 
-		try {
-			MimeMessage m = new MimeMessage(this.mailSession);
-			m.setRecipients(Message.RecipientType.TO, "kavg@ngs.ru");
-			m.setSender(new InternetAddress("wildflymail@mail.ru"));
-			m.setContent("Test from Wildfly", "text/plain");
+            this.channels.add( channel );
+            this.channelTypes.remove( channelType );
+        } else
+        {
+            LOG.warn( "Bad parameters: channelType='{}', channelValue='{}'", channelType, chanelValue );
+        }
+    }
 
-			Transport.send(m);
-		} catch (Exception e) {
-			LOG.error("dd", e);
-		}
+    public void removeChannel( Channel channel )
+    {
+        Iterator< Channel > iterator = this.channels.iterator();
 
-	}
+        while ( iterator.hasNext() )
+        {
+            Channel channel2 = iterator.next();
 
-	public void addChannel(ChannelType channelType, String chanelValue) {
-		if (channelType != null && chanelValue != null) {
-			Channel channel = new Channel();
-			channel.setChannelType(channelType);
-			channel.setValue(chanelValue);
-			channel.setUser(this.user);
+            if ( channel.getChannelType().equals( channel2.getChannelType() ) )
+            {
+                iterator.remove();
+                this.channelTypes.add( channel.getChannelType() );
 
-			this.channels.add(channel);
-			this.channelTypes.remove(channelType);
-		} else {
-			LOG.warn("Bad parameters: channelType='{}', channelValue='{}'", channelType, chanelValue);
-		}
-	}
+                if ( channel2.getSystemId() != null )
+                {
+                    this.channelService.remove( channel2 );
+                }
+            } ;
+        }
+    }
 
-	public void removeChannel(Channel channel) {
-		Iterator<Channel> iterator = this.channels.iterator();
+    @Transactional( TxType.REQUIRES_NEW )
+    public String submite() throws Exception
+    {
+        try
+        {
+            User user;
+            Role role = this.userRepository.getRegisteredRole();
 
-		while (iterator.hasNext()) {
-			Channel channel2 = iterator.next();
+            Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
 
-			if (channel.getChannelType().equals(channel2.getChannelType())) {
-				iterator.remove();
-				this.channelTypes.add(channel.getChannelType());
+            if ( principal == null )
+            {
+                user = new User();
+                user.setPassword( PasswordGenerator.generate( this.password ) );
+            } else
+            {
+                user = this.userRepository.get( this.login );
 
-				if (channel2.getSystemId() != null) {
-					this.channelService.remove(channel2);
-				}
-			}
-			;
-		}
-	}
+                if ( this.password != null && !this.password.isEmpty() )
+                {
+                    user.setPassword( PasswordGenerator.generate( this.password ) );
+                }
+            }
 
-	@Transactional(TxType.REQUIRES_NEW)
-	public String submite() throws Exception {
-		try {
-			User user;
-			Role role = this.userRepository.getRegisteredRole();
+            user.setLogin( this.login );
+            user.setRoles( Collections.singleton( role ) );
+            user = this.userRepository.put( user );
 
-			Principal principal = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+            this.emailChannel.setUser( user );
+            this.channelService.put( this.emailChannel );
 
-			if (principal == null) {
-				user = new User();
-				user.setPassword(PasswordGenerator.generate(this.password));
-			} else {
-				user = this.userRepository.get(this.login);
+            for ( Channel channel : this.channels )
+            {
+                channel.setUser( user );
+                this.channelService.put( channel );
+            }
 
-				if (this.password != null && !this.password.isEmpty()) {
-					user.setPassword(PasswordGenerator.generate(this.password));
-				}
-			}
+            if ( principal == null )
+            {
+                this.confirmRegistrationService.newInstance( user );
+                return "confirmpage";
+            } else
+            {
+                return "account";
+            }
 
-			user.setLogin(this.login);
-			user.setRoles(Collections.singleton(role));
-			user = this.userRepository.put(user);
+        } catch ( Exception e )
+        {
+            LOG.error( "Cant' create user!" );
+            throw e;
+        }
+    }
 
-			this.emailChannel.setUser(user);
-			this.channelService.put(this.emailChannel);
+    public Channel getEmailChannel()
+    {
+        return emailChannel;
+    }
 
-			for (Channel channel : this.channels) {
-				channel.setUser(user);
-				this.channelService.put(channel);
-			}
+    public void setEmailChannel( Channel emailChannel )
+    {
+        this.emailChannel = emailChannel;
+    }
 
-			if (principal == null) {
-				this.confirmRegistrationService.newInstance(user);
-				return "confirmpage";
-			} else {
-				return "account";
-			}
+    public String getLogin()
+    {
+        return login;
+    }
 
-		} catch (Exception e) {
-			LOG.error("Cant' create user!");
-			throw e;
-		}
-	}
+    public void setLogin( String login )
+    {
+        this.login = login;
+    }
 
-	public Channel getEmailChannel() {
-		return emailChannel;
-	}
+    public String getPassword()
+    {
+        return password;
+    }
 
-	public void setEmailChannel(Channel emailChannel) {
-		this.emailChannel = emailChannel;
-	}
+    public void setPassword( String password )
+    {
+        this.password = password;
+    }
 
-	public String getLogin() {
-		return login;
-	}
+    public String getRepeatPassword()
+    {
+        return repeatPassword;
+    }
 
-	public void setLogin(String login) {
-		this.login = login;
-	}
+    public void setRepeatPassword( String repeatPassword )
+    {
+        this.repeatPassword = repeatPassword;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public List< Channel > getChannels()
+    {
+        return this.channels;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public List< ChannelType > getChannelTypes()
+    {
+        Collections.sort( this.channelTypes, CHANNEL_TYPE_COMPARATOR );
 
-	public String getRepeatPassword() {
-		return repeatPassword;
-	}
+        return this.channelTypes;
+    }
 
-	public void setRepeatPassword(String repeatPassword) {
-		this.repeatPassword = repeatPassword;
-	}
+    private Channel getEmptyEmailChannel()
+    {
+        Channel channel = new Channel();
+        channel.setChannelType( this.channelService.getEmailChannelType() );
 
-	public List<Channel> getChannels() {
-		return this.channels;
-	}
-
-	public List<ChannelType> getChannelTypes() {
-		Collections.sort(this.channelTypes, CHANNEL_TYPE_COMPARATOR);
-
-		return this.channelTypes;
-	}
-
-	private Channel getEmptyEmailChannel() {
-		Channel channel = new Channel();
-		channel.setChannelType(this.channelService.getEmailChannelType());
-
-		return channel;
-	}
+        return channel;
+    }
 }
