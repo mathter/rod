@@ -105,8 +105,35 @@ public class ChannelServiceImpl extends AbstractJPARepository implements Channel
     }
 
     @Override
+    public Channel getEmailChannel( User user )
+    {
+        List< Channel > channels = this.get( user );
+        ChannelType emailChannelType = this.getEmailChannelType();
+
+        for ( Channel channel : channels )
+        {
+            if ( emailChannelType.equals( channel.getChannelType() ) )
+            {
+                return channel;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public ChannelType getEmailChannelType()
     {
-        return this.getChannelType( CHANNEL_TYPE_EMAIL );
+        ChannelType channelType = this.getChannelType( CHANNEL_TYPE_EMAIL );
+
+        if ( channelType == null )
+        {
+            channelType = new ChannelType();
+            channelType.setName( CHANNEL_TYPE_EMAIL );
+
+            channelType = this.put( channelType );
+        }
+
+        return channelType;
     }
 }

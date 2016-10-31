@@ -59,5 +59,14 @@
 			<artifactId>rod-config-ejb</artifactId>
 			<type>ejb</type>
 		</dependency>
+		<dependency>
+			<groupId>rod-connecting-api</groupId>
+			<artifactId>rod-connecting-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>rod-connecting-ejb</groupId>
+			<artifactId>rod-connecting-ejb</artifactId>
+			<type>ejb</type>
+		</dependency>
 	</dependencies>
 </project>

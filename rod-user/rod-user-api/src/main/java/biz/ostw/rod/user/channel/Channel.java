@@ -41,7 +41,7 @@ import biz.ostw.rod.user.User;
     @NamedQuery( name = "Channel_getByUser", query = "select c from Channel c where c.user = :user" ), @NamedQuery(
         name = "Channel_deleteByUserAndChannelType", query = "delete from Channel c where c.user = :user and c.channelType = :channelType" )
 } )
-public class Channel implements SystemId< Long >, Serializable
+public class Channel implements SystemId< Long >, Serializable, biz.ostw.rod.connecting.Channel
 {
     private static final long serialVersionUID = -1136445027433051656L;
 
@@ -76,6 +76,7 @@ public class Channel implements SystemId< Long >, Serializable
         this.systemId = id;
     }
 
+    @Override
     public ChannelType getChannelType()
     {
         return this.channelType;
@@ -86,6 +87,7 @@ public class Channel implements SystemId< Long >, Serializable
         this.channelType = channelType;
     }
 
+    @Override
     public String getValue()
     {
         return this.value;

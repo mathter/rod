@@ -27,7 +27,7 @@ import biz.ostw.persistence.SystemId;
     @NamedQuery( name = "ChannelType_getAll", query = "select ct from ChannelType ct order by ct.name asc" ),
     @NamedQuery( name = "ChannelType_getByName", query = "select ct from ChannelType ct where ct.name = :name" )
 } )
-public class ChannelType implements SystemId< Long >, Serializable
+public class ChannelType implements SystemId< Long >, Serializable, biz.ostw.rod.connecting.ChannelType
 {
     private static final long serialVersionUID = 3054636380231718197L;
 
@@ -52,6 +52,7 @@ public class ChannelType implements SystemId< Long >, Serializable
         this.systemId = id;
     }
 
+    @Override
     public String getName()
     {
         return name;

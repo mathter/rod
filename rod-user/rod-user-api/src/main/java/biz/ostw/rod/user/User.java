@@ -63,7 +63,7 @@ public class User implements SystemId< Long >, Serializable
 
     @Embedded
     @Fetch( FetchMode.JOIN )
-    private AccessInfo accessInfo;
+    private AccessInfo accessInfo = new AccessInfo();
 
     @Override
     public Long getSystemId()

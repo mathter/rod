@@ -13,8 +13,8 @@ public class AccessInfo implements Serializable
 {
     private static final long serialVersionUID = 3806023040575496957L;
 
-    @Column( name = "is_registered", nullable = false, columnDefinition = "char(1) default 'n'" )
-    private boolean isRegistered;
+    @Column( name = "is_registered", nullable = false )
+    private boolean isRegistered = false;
 
     public boolean isRegistered()
     {

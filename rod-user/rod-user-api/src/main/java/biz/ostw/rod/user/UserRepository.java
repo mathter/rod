@@ -10,4 +10,6 @@ public interface UserRepository extends Repository
     public User get( String login );
 
     public Role getRegisteredRole();
+
+    public Role getNewRole();
 }

@@ -79,5 +79,9 @@
 			<artifactId>hibernate-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>rod-connecting-api</groupId>
+			<artifactId>rod-connecting-api</artifactId>
+		</dependency>
 	</dependencies>
 </project>

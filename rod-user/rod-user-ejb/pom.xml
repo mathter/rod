@@ -48,6 +48,18 @@
 			<groupId>rod</groupId>
 			<artifactId>rod-user-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>rod-connecting-api</groupId>
+			<artifactId>rod-connecting-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>rod-config-api</groupId>
+			<artifactId>rod-config-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+		</dependency>
 	</dependencies>
 	<packaging>ejb</packaging>
 </project>
