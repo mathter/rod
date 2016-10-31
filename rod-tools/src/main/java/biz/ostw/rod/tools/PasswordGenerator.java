@@ -16,7 +16,7 @@ public final class PasswordGenerator
         byte[] bytes = password.getBytes( CHARSET );
         bytes = md.digest( bytes );
 
-        return Hex.encodeHexString( bytes );
+        return Hex.encodeHexString( bytes ).toLowerCase();
     }
 
     private PasswordGenerator()

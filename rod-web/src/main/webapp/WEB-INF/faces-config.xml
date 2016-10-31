@@ -21,7 +21,7 @@
 	<lifecycle>
 		<phase-listener>org.primefaces.component.lifecycle.LifecyclePhaseListener</phase-listener>
 	</lifecycle>
-	
+
 	<navigation-rule>
 		<from-view-id>registration.xhtml</from-view-id>
 		<navigation-case>
@@ -34,14 +34,7 @@
 		<from-view-id>*</from-view-id>
 		<navigation-case>
 			<from-outcome>account</from-outcome>
-			<to-view-id>account.xhtml</to-view-id>
-		</navigation-case>
-	</navigation-rule>
-	<navigation-rule>
-		<from-view-id>*</from-view-id>
-		<navigation-case>
-			<from-outcome>confirmpage</from-outcome>
-			<to-view-id>confirmpage.xhtml</to-view-id>
+			<to-view-id>account/account.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 </faces-config>

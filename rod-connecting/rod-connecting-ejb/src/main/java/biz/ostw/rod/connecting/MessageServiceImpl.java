@@ -1,5 +1,6 @@
 package biz.ostw.rod.connecting;
 
+import javax.activation.MimeType;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
@@ -33,7 +34,7 @@ public class MessageServiceImpl implements MessageService
     private ConfigService configService;
 
     @Override
-    public void send( Channel channel, Object subject, Object content ) throws ConnectingException
+    public void send( Channel channel, Object subject, Object content, MimeType mimeType ) throws ConnectingException
     {
         if ( channel == null )
         {
@@ -47,7 +48,7 @@ public class MessageServiceImpl implements MessageService
             MimeMessage m = new MimeMessage( this.mailSession );
             m.setRecipients( Message.RecipientType.TO, String.valueOf( channel.getValue() ) );
             m.setSender( new InternetAddress( from ) );
-            m.setContent( content, "text/plain" );
+            m.setContent( content, mimeType.toString() );
             m.setSubject( String.valueOf( subject ) );
 
             Transport.send( m );

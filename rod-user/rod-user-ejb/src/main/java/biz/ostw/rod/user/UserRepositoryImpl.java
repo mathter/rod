@@ -59,4 +59,20 @@ public class UserRepositoryImpl extends AbstractJPARepository implements UserRep
             return null;
         }
     }
+    
+    @Override
+    public Role getNewRole()
+    {
+        TypedQuery< Role > query = this.em.createNamedQuery( "Role_getByName", Role.class );
+
+        query.setParameter( "name", "new" );
+
+        try
+        {
+            return query.getSingleResult();
+        } catch ( NoResultException e )
+        {
+            return null;
+        }
+    }
 }

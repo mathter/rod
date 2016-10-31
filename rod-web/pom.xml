@@ -109,6 +109,11 @@
 		<dependency>
 			<groupId>rod-connecting-api</groupId>
 			<artifactId>rod-connecting-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
 		</dependency>
 	</dependencies>
 

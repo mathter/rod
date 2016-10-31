@@ -12,9 +12,10 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import biz.ostw.persistence.jpa.AbstractJPARepository;
-import biz.ostw.rod.connecting.MessageService;
-import biz.ostw.rod.user.channel.Channel;
 import biz.ostw.rod.user.channel.ChannelService;
 
 /**
@@ -22,8 +23,10 @@ import biz.ostw.rod.user.channel.ChannelService;
  */
 @Remote( ConfirmRegistrationService.class )
 @Stateless
-public class ConfirmRegistrationImpl extends AbstractJPARepository implements ConfirmRegistrationService
+public class ConfirmRegistrationServiceImpl extends AbstractJPARepository implements ConfirmRegistrationService
 {
+    private static final Logger LOG = LoggerFactory.getLogger( ConfirmRegistrationServiceImpl.class );
+
     @PersistenceContext( name = "biz.ostw.rod.user" )
     private EntityManager em;
 
@@ -32,9 +35,6 @@ public class ConfirmRegistrationImpl extends AbstractJPARepository implements Co
 
     @EJB
     private ChannelService channelService;
-
-    @EJB
-    private MessageService messageService;
 
     @Override
     @Transactional( TxType.REQUIRED )
@@ -47,17 +47,15 @@ public class ConfirmRegistrationImpl extends AbstractJPARepository implements Co
         entity.setDate( new Date() );
 
         entity = this.em.merge( entity );
-        
-        Channel emailChannel = this.channelService.getEmailChannel( user );
 
-        this.messageService.send( emailChannel, "Registration", "Content" );
+        LOG.info( "Create confirm registration '{}' for '{}'", entity.getUuid(), user.getLogin() );
 
         return entity;
     }
 
     @Override
     @Transactional( TxType.REQUIRED )
-    public void confirm( UUID uuid )
+    public User confirm( UUID uuid )
     {
         ConfirmRegistration confirmRegistration = this.get( ConfirmRegistration.class, uuid );
 
@@ -72,6 +70,10 @@ public class ConfirmRegistrationImpl extends AbstractJPARepository implements Co
 
                 this.put( confirmRegistration );
                 user = this.put( user );
+
+                LOG.info( "Registration is completed for '{}'", user.getLogin() );
+                
+                return user;
             } else
             {
                 throw new IllegalStateException( "There is no user for '" + uuid + "'!" );
