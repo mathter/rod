@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import biz.ostw.rod.user.ConfirmRegistration;
 import biz.ostw.rod.user.ConfirmRegistrationService;
 import biz.ostw.rod.user.Role;
 import biz.ostw.rod.user.User;

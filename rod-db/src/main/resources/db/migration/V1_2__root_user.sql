@@ -1,0 +1,3 @@
+insert into users (id, login, password, is_registered) values (nextval('users_seq'), 'root', '827ccb0eea8a706c4c34a16891f84e7b', 'y');
+insert into user_role_map (user_id, role_id) values ((select id from users where login = 'root'), (select id from user_roles where name = 'root'));
+insert into user_role_map (user_id, role_id) values ((select id from users where login = 'root'), (select id from user_roles where name = 'registered'));

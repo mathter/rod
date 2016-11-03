@@ -24,6 +24,10 @@
 		<module>rod-tools</module>
 		<module>rod-config</module>
 		<module>rod-connecting</module>
+
+
+		
+		<module>rod-db</module>
 	</modules>
 
 	<dependencyManagement>

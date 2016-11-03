@@ -112,7 +112,4 @@
 	<login-config>
 		<auth-method>BASIC</auth-method>
 	</login-config>
-	<security-role>
-		<role-name>registered</role-name>
-	</security-role>
 </web-app>

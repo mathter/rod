@@ -1,0 +1,3 @@
+insert into config_records (key, value, config_type_id) values ('biz.oswt.rod.connecting.from.email', 'wildflymail@mail.ru', (select id from config_types where name = 'string'));
+insert into config_records (key, value, config_type_id) values ('biz.ostw.rod.site.user.profile.confirmRequestSubjectTemplate', 'Confirmation', (select id from config_types where name = 'string'));
+insert into config_records (key, value, config_type_id) values ('biz.ostw.rod.site.user.profile.confirmRequestMessageTemplate', '<html><body>${user.login}<br/><a href="http://localhost:8080/rod/registration/confirm?uuid=${uuid}">${uuid}</a><body></html>', (select id from config_types where name = 'string'));

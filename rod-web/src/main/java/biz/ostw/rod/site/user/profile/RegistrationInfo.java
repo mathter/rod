@@ -1,5 +1,6 @@
 package biz.ostw.rod.site.user.profile;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -35,8 +36,12 @@ import biz.ostw.rod.user.channel.Channel;
 import biz.ostw.rod.user.channel.ChannelService;
 import biz.ostw.rod.user.channel.ChannelType;
 import freemarker.cache.StringTemplateLoader;
+import freemarker.core.ParseException;
 import freemarker.template.Configuration;
+import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateNotFoundException;
 
 /**
  * @author mathter
@@ -47,7 +52,9 @@ public class RegistrationInfo
 {
     private static final Logger LOG = LoggerFactory.getLogger( RegistrationInfo.class );
 
-    private static final String CONFIG_TEMPLATE = "biz.ostw.rod.site.user.profile.confirmRequestTemplate";
+    private static final String CONFIG_SUBJECT_TEMPLATE = "biz.ostw.rod.site.user.profile.confirmRequestSubjectTemplate";
+
+    private static final String CONFIG_MESSAGE_TEMPLATE = "biz.ostw.rod.site.user.profile.confirmRequestMessageTemplate";
 
     private static final Comparator< ChannelType > CHANNEL_TYPE_COMPARATOR = new Comparator< ChannelType >()
     {
@@ -202,7 +209,7 @@ public class RegistrationInfo
                 Role role = this.userRepository.getNewRole();
                 user.setRoles( Collections.singleton( role ) );
             }
-            
+
             user = this.userRepository.put( user );
 
             this.emailChannel.setUser( user );
@@ -236,42 +243,49 @@ public class RegistrationInfo
         {
             Channel emailChannel = this.channelService.getEmailChannel( user );
             Locale browserLocale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-            Configuration configuration = new Configuration( Configuration.VERSION_2_3_25 );
 
-            configuration.setTemplateLoader( new StringTemplateLoader()
-            {
-                @Override
-                public Object findTemplateSource( String name )
-                {
-                    String value = configService.getString( name );
-
-                    if ( value != null )
-                    {
-                        this.putTemplate( name, value );
-                    }
-
-                    return super.findTemplateSource( name );
-                }
-            } );
-
-            Template template = configuration.getTemplate( CONFIG_TEMPLATE, browserLocale );
-            StringWriter writer = new StringWriter();
-
-            Map< String, Object > bundle = new HashMap<>();
-
-            bundle.put( "user", user );
-            bundle.put( "uuid", confirmRegistration.getUuid() );
-
-            template.process( bundle, writer );
-
-            String message = writer.getBuffer().toString();
-
-            this.messageService.send( emailChannel, "Registration", message, new MimeType( "text/html" ) );
+            this.messageService.send( emailChannel, this.getMessageSubject( browserLocale ),
+                this.getMessageText( browserLocale, user, confirmRegistration ), new MimeType( "text/html" ) );
 
         } catch ( Exception e )
         {
             LOG.error( "Can't send confirm request!", e );
         }
+    }
+
+    private String getMessageSubject( Locale locale )
+        throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException
+    {
+        Configuration configuration = new Configuration( Configuration.VERSION_2_3_25 );
+
+        configuration.setTemplateLoader( new TemplateLoader() );
+
+        Template template = configuration.getTemplate( CONFIG_SUBJECT_TEMPLATE, locale );
+        StringWriter writer = new StringWriter();
+
+        template.process( null, writer );
+
+        return writer.getBuffer().toString();
+    }
+
+    private String getMessageText( Locale locale, User user, ConfirmRegistration confirmRegistration )
+        throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException
+    {
+        Configuration configuration = new Configuration( Configuration.VERSION_2_3_25 );
+
+        configuration.setTemplateLoader( new TemplateLoader() );
+
+        Template template = configuration.getTemplate( CONFIG_MESSAGE_TEMPLATE, locale );
+        StringWriter writer = new StringWriter();
+
+        Map< String, Object > bundle = new HashMap<>();
+
+        bundle.put( "user", user );
+        bundle.put( "uuid", confirmRegistration.getUuid() );
+
+        template.process( bundle, writer );
+
+        return writer.getBuffer().toString();
     }
 
     public Channel getEmailChannel()
@@ -332,5 +346,21 @@ public class RegistrationInfo
         channel.setChannelType( this.channelService.getEmailChannelType() );
 
         return channel;
+    }
+
+    private class TemplateLoader extends StringTemplateLoader
+    {
+        @Override
+        public Object findTemplateSource( String name )
+        {
+            String value = configService.getString( name );
+
+            if ( value != null )
+            {
+                this.putTemplate( name, value );
+            }
+
+            return super.findTemplateSource( name );
+        }
     }
 }
