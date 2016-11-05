@@ -49,7 +49,7 @@ public class ConfirmServlet extends HttpServlet
             user.setRoles( Collections.singleton( role ) );
             this.userRepository.put( user );
 
-            response.sendRedirect( request.getContextPath() + "/account/account.xhtml" );
+            response.sendRedirect( request.getContextPath() + "/account" );
         } catch ( IllegalStateException e )
         {
             LOG.error( "Can't confirm '" + uuidParameter + "'!", e );

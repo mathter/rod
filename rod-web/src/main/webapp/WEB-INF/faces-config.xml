@@ -23,18 +23,11 @@
 	</lifecycle>
 
 	<navigation-rule>
-		<from-view-id>registration.xhtml</from-view-id>
+		<from-view-id>/registration/*</from-view-id>
 		<navigation-case>
 			<from-outcome>account</from-outcome>
-			<to-view-id>index.xhtml</to-view-id>
-		</navigation-case>
-	</navigation-rule>
-
-	<navigation-rule>
-		<from-view-id>*</from-view-id>
-		<navigation-case>
-			<from-outcome>account</from-outcome>
-			<to-view-id>account/account.xhtml</to-view-id>
+			<to-view-id>/account/index.jsp</to-view-id>
+			<redirect />
 		</navigation-case>
 	</navigation-rule>
 </faces-config>

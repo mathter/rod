@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-	version="3.0">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 	<context-param>
 		<param-name>com.sun.faces.numberOfViewsInSession</param-name>
 		<param-value>5</param-value>
@@ -90,10 +89,10 @@
 	<welcome-file-list>
 		<welcome-file>/index.xhtml</welcome-file>
 	</welcome-file-list>
-
 	<security-constraint>
+		<display-name>Registered area</display-name>
 		<web-resource-collection>
-			<web-resource-name>Registered area</web-resource-name>
+			<web-resource-name>account</web-resource-name>
 			<url-pattern>/account/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
@@ -101,7 +100,6 @@
 			<role-name>registered</role-name>
 		</auth-constraint>
 	</security-constraint>
-
 	<security-role>
 		<role-name>registered</role-name>
 	</security-role>

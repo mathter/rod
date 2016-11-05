@@ -11,7 +11,7 @@
 			<p:panel id="authDataPanel"
 				header="${msg['fragment.registrationInfo.authDataPanel.title']}">
 				<h:panelGrid columns="2">
-					<p:outputLabel
+					<p:outputLabel id="loginLabel"
 						value="${msg['fragment.registrationInfo.authDataPanel.login']}"
 						for="login" />
 					<p:inputText id="login" required="true"
@@ -19,7 +19,7 @@
 						<f:validator binding="${userExistsValidator}" />
 					</p:inputText>
 
-					<p:outputLabel
+					<p:outputLabel id="passwordLabel"
 						value="${msg['fragment.registrationInfo.authDataPanel.password']}"
 						for="password" />
 
@@ -30,7 +30,7 @@
 							value="${repeatPassword.submittedValue}" />
 					</p:password>
 
-					<p:outputLabel
+					<p:outputLabel id="repeatePasswordLabel"
 						value="${msg['fragment.registrationInfo.authDataPanel.repeatPassword']}"
 						for="repeatPassword" />
 
@@ -43,26 +43,27 @@
 				header="${msg['fragment.registrationInfo.contactDataPanel.title']}">
 				<table>
 					<tr>
-						<td><h:outputText
+						<td><h:outputText id="emailChannelChannelType"
 								value="${registrationInfoBean.registrationInfo.emailChannel.channelType.name}" /></td>
-						<td><p:inputText
+						<td><p:inputText id="emailChannelValue"
 								value="${registrationInfoBean.registrationInfo.emailChannel.value}"
 								required="true" /></td>
 					</tr>
-					<ui:repeat var="channel"
+					<p:repeat var="channel"
 						value="${registrationInfoBean.registrationInfo.channels}"
 						varStatus="status">
 						<tr>
-							<td><h:outputLabel value="${channel.channelType.name}" /></td>
-							<td><p:inputText value="${channel.value}"
+							<td><h:outputLabel id="channelName"
+									value="${channel.channelType.name}" /></td>
+							<td><p:inputText id="channelValue" value="${channel.value}"
 									label="${channel.channelType.name}" /></td>
-							<td><p:commandLink process="@this"
+							<td><p:commandLink id="channelRemoveAction" process="@this"
 									rendered="${channel.channelType.name != 'email'}"
 									action="${registrationInfoBean.registrationInfo.removeChannel(channel)}"
 									update=":registrationForm:contactDataPanel"
 									value="${msg['fragment.registrationInfo.contactDataPanel.removeChanel.title']}" /></td>
 						</tr>
-					</ui:repeat>
+					</p:repeat>
 				</table>
 				<h:panelGrid columns="3">
 					<p:selectOneMenu id="channelType" binding="${channelType}"
@@ -80,7 +81,7 @@
 					<p:inputText id="channelValue" binding="${channelValue}"
 						label="${msg['fragment.registrationInfo.contactDataPanel.channelValue']}" />
 
-					<p:commandLink
+					<p:commandLink id="channelAddAction"
 						value="${msg['fragment.registrationInfo.contactDataPanel.addChanel.title']}"
 						process="channelType, channelValue, @this"
 						action="${registrationInfoBean.registrationInfo.addChannel(channelType.value, channelValue.value)}"
@@ -89,7 +90,7 @@
 			</p:panel>
 			<p:commandLink value="${msg['fragment.registrationInfo.submite']}"
 				action="${registrationInfoBean.registrationInfo.submite()}"
-				update="registrationForm" />
+				update="registrationForm" ajax="false" />
 		</h:form>
 	</div>
 </body>

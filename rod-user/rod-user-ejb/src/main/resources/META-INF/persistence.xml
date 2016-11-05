@@ -33,10 +33,10 @@
 				value="java:jboss/infinispan/container/hibernate" />
 
 			<property name="hibernate.cache.region_prefix" value="user" />
-			<!-- property name="hibernate.cache.infinispan.config.quick.cfg"
+			<property name="hibernate.cache.infinispan.user.quick.cfg"
 				value="quick" />
-			<property name="hibernate.cache.infinispan.config.slow.cfg"
-				value="slow" / -->
+			<property name="hibernate.cache.infinispan.user.slow.cfg"
+				value="slow" />
 		</properties>
 	</persistence-unit>
 </persistence>

@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PROCESS model-entity="JSFProcess">
- <PROCESS-ITEM NAME="rules:*" PATH="*" SHAPE="32,17,0,0" model-entity="JSFProcessGroup">
-  <PROCESS-ITEM ID="rules:*:0" NAME="item" PATH="*" model-entity="JSFProcessItem">
-   <PROCESS-ITEM-OUTPUT ID="account::account#account.xhtml"
-    NAME="output" PATH="account/account.xhtml"
-    TARGET="rules:account#account.xhtml" TITLE="account" model-entity="JSFProcessItemOutput"/>
+ <PROCESS-ITEM NAME="rules:#registration#*" PATH="/registration/*"
+  SHAPE="32,17,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#registration#*:0" NAME="item"
+   PATH="/registration/*" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="account::#account#index.jsp" NAME="output"
+    PATH="/account/index.jsp" TARGET="rules:#account#index.jsp"
+    TITLE="account" model-entity="JSFProcessItemOutput"/>
   </PROCESS-ITEM>
  </PROCESS-ITEM>
- <PROCESS-ITEM NAME="rules:registration.xhtml" PATH="registration.xhtml"
-  SHAPE="32,129,0,0" model-entity="JSFProcessGroup">
-  <PROCESS-ITEM ID="rules:registration.xhtml:0" NAME="item"
-   PATH="registration.xhtml" model-entity="JSFProcessItem">
-   <PROCESS-ITEM-OUTPUT ID="account::index.xhtml" NAME="output"
-    PATH="index.xhtml" TARGET="rules:index.xhtml" TITLE="account" model-entity="JSFProcessItemOutput"/>
-  </PROCESS-ITEM>
- </PROCESS-ITEM>
- <PROCESS-ITEM NAME="rules:index.xhtml" PATH="index.xhtml"
-  SHAPE="240,145,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:account#account.xhtml"
-  PATH="account/account.xhtml" SHAPE="240,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#account#index.jsp" PATH="/account/index.jsp"
+  SHAPE="240,33,0,0" model-entity="JSFProcessGroup"/>
 </PROCESS>

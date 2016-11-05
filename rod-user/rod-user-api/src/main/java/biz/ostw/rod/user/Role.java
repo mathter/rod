@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,6 +30,7 @@ import biz.ostw.persistence.SystemId;
 {
     @NamedQuery( name = "Role_getByName", query = "select r from Role r where name = :name" )
 } )
+@Cacheable
 @Cache( usage = CacheConcurrencyStrategy.READ_ONLY, region = "slow" )
 public class Role implements SystemId< Long >, Serializable
 {
