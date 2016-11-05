@@ -1,17 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>rod</groupId>
-    <artifactId>parent</artifactId>
+    <groupId>rod-config</groupId>
+    <artifactId>rod-config</artifactId>
     <version>0.0.1</version>
   </parent>
-  <groupId>rod-config</groupId>
-  <artifactId>rod-config</artifactId>
-  <packaging>pom</packaging>
-  <modules>
-  	<module>rod-config-api</module>
-  	
-  	<module>rod-config-ejb</module>
-  	<module>rod-config-fragment</module>
-  </modules>
+  <groupId>rod-config-fragment</groupId>
+  <artifactId>rod-config-fragment</artifactId>
+  <dependencies>
+  	<dependency>
+  		<groupId>javax</groupId>
+  		<artifactId>javaee-api</artifactId>
+  	</dependency>
+  </dependencies>
 </project>
