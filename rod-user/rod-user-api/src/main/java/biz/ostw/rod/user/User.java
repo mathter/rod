@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -21,6 +22,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -59,6 +62,7 @@ public class User implements SystemId< Long >, Serializable
     @JoinTable( name = "user_role_map", joinColumns = @JoinColumn( name = "user_id" ),
         inverseJoinColumns = @JoinColumn( name = "role_id" ) )
     @Fetch( FetchMode.JOIN )
+    @Cache( region = "slow", usage = CacheConcurrencyStrategy.TRANSACTIONAL )
     private Set< Role > roles;
 
     @Embedded

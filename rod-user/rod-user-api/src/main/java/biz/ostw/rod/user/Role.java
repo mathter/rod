@@ -14,6 +14,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import biz.ostw.persistence.SystemId;
 
 /**
@@ -26,6 +29,7 @@ import biz.ostw.persistence.SystemId;
 {
     @NamedQuery( name = "Role_getByName", query = "select r from Role r where name = :name" )
 } )
+@Cache( usage = CacheConcurrencyStrategy.READ_ONLY, region = "slow" )
 public class Role implements SystemId< Long >, Serializable
 {
     private static final long serialVersionUID = 4780338221380511382L;
