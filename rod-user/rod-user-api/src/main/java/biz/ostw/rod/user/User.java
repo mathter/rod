@@ -39,6 +39,8 @@ import biz.ostw.persistence.SystemId;
 {
     @NamedQuery( name = "User_getByLogin", query = "select u from User u where u.login = :login" )
 } )
+@Cacheable
+@Cache( usage = CacheConcurrencyStrategy.TRANSACTIONAL )
 public class User implements SystemId< Long >, Serializable
 {
     private static final long serialVersionUID = 8495070763544425473L;
@@ -62,7 +64,6 @@ public class User implements SystemId< Long >, Serializable
     @JoinTable( name = "user_role_map", joinColumns = @JoinColumn( name = "user_id" ),
         inverseJoinColumns = @JoinColumn( name = "role_id" ) )
     @Fetch( FetchMode.JOIN )
-    @Cache( region = "slow", usage = CacheConcurrencyStrategy.TRANSACTIONAL )
     private Set< Role > roles;
 
     @Embedded
