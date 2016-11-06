@@ -127,7 +127,7 @@ create sequence users_seq
   increment 1
   minvalue 1
   maxvalue 9223372036854775807
-  start 8
+  start 1
   cache 1;
   
 
@@ -135,7 +135,7 @@ create sequence user_roles_seq
   increment 1
   minvalue 1
   maxvalue 9223372036854775807
-  start 3
+  start 1
   cache 1;
   
   
@@ -143,7 +143,7 @@ create sequence user_channels_seq
   increment 1
   minvalue 1
   maxvalue 9223372036854775807
-  start 7
+  start 1
   cache 1;
   
   
@@ -151,7 +151,7 @@ create sequence user_channel_types_seq
   increment 1
   minvalue 1
   maxvalue 9223372036854775807
-  start 6
+  start 1
   cache 1;
 
   
@@ -159,5 +159,5 @@ create sequence config_types_seq
   increment 1
   minvalue 1
   maxvalue 9223372036854775807
-  start 7
+  start 1
   cache 1;

@@ -123,6 +123,18 @@ public class User implements SystemId< Long >, Serializable
     }
 
     @Override
+    public int hashCode()
+    {
+        return (int) this.systemId;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        return obj instanceof User && this.systemId == ( (User) obj ).systemId;
+    }
+
+    @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();

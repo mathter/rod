@@ -68,5 +68,14 @@
 			<artifactId>rod-connecting-ejb</artifactId>
 			<type>ejb</type>
 		</dependency>
+		<dependency>
+			<groupId>rod-vfs-api</groupId>
+			<artifactId>rod-vfs-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>rod-vfs-ejb</groupId>
+			<artifactId>rod-vfs-ejb</artifactId>
+			<type>ejb</type>
+		</dependency>
 	</dependencies>
 </project>

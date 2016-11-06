@@ -38,7 +38,7 @@ public class ConfigType implements Serializable
     @Column( name = "id" )
     @SequenceGenerator( name = "config_types_gen", sequenceName = "config_types_seq", allocationSize = 1, initialValue = 1 )
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "config_types_gen" )
-    private Long id;
+    private long id;
 
     @Column( name = "name", nullable = false, unique = true )
     private String name;
@@ -66,7 +66,7 @@ public class ConfigType implements Serializable
     @Override
     public int hashCode()
     {
-        return (int) ( this.id != null ? this.id : 0 );
+        return (int) this.id;
     }
 
     @Override

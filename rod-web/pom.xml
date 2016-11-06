@@ -119,6 +119,11 @@
 			<groupId>rod-config-fragment</groupId>
 			<artifactId>rod-config-fragment</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>rod-vfs-api</groupId>
+			<artifactId>rod-vfs-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 

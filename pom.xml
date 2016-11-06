@@ -27,8 +27,9 @@
 		<module>rod-connecting</module>
 
 
-		
+
 		<module>rod-db</module>
+		<module>rod-vfs</module>
 	</modules>
 
 	<dependencyManagement>
@@ -207,6 +208,7 @@
 				<version>0.0.1</version>
 			</dependency>
 			<dependency>
+
 				<groupId>biz.ostw</groupId>
 				<artifactId>persistence-ee-api</artifactId>
 				<version>0.0.1</version>
@@ -215,6 +217,17 @@
 				<groupId>biz.ostw</groupId>
 				<artifactId>persistence-ee-jpa</artifactId>
 				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>rod-vfs-api</groupId>
+				<artifactId>rod-vfs-api</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>rod-vfs-ejb</groupId>
+				<artifactId>rod-vfs-ejb</artifactId>
+				<version>0.0.1</version>
+				<type>ejb</type>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
