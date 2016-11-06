@@ -7,11 +7,20 @@ import java.util.List;
  */
 public interface VfsService
 {
-    public List< VfsPath > getByParent( VfsDir root );
+    public char getPathSeparator();
 
-    public VfsDir createDir( VfsDir root, String name ) throws VfsPathAlreadyExistsException;
+    /**
+     * Return root directory if parent is null.
+     * @param parent
+     * @return
+     */
+    public List< VfsPath > getByParent( VfsDir parent );
 
-    public VfsFile createFile( VfsDir root, String name ) throws VfsPathAlreadyExistsException;
+    public VfsPath getByPath( String path ) throws NullPointerException, IllegalArgumentException;
+
+    public VfsDir createDir( VfsDir parent, String name ) throws VfsPathAlreadyExistsException, NullPointerException;
+
+    public VfsFile createFile( VfsDir parent, String name ) throws VfsPathAlreadyExistsException, NullPointerException;
 
     public VfsPath rename( VfsPath path, String name ) throws VfsPathAlreadyExistsException;
 

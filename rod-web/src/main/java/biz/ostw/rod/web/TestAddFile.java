@@ -31,14 +31,16 @@ public class TestAddFile extends HttpServlet
         String name = request.getParameter( "name" );
         String type = request.getParameter( "type" );
 
+        VfsDir root = (VfsDir) this.vfsService.getByParent( null ).stream().findFirst().get();
+
         switch ( type )
         {
         case "dir":
-            this.vfsService.createDir( null, name );
+            this.vfsService.createDir( root, name );
             break;
 
         case "file":
-            this.vfsService.createFile( null, name );
+            this.vfsService.createFile( root, name );
             break;
 
         default:
