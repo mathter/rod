@@ -66,6 +66,9 @@ public abstract class VfsPath implements Serializable
     @JoinColumn( name = "parent_id", nullable = true )
     private VfsPathFake parent;
 
+    @Column( name = "owner_id", nullable = true )
+    private Long ownerId;
+
     public long getId()
     {
         return id;
