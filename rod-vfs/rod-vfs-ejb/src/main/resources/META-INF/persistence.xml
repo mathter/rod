@@ -10,11 +10,12 @@
 
 		<class>biz.ostw.ee.vfs.VfsDir</class>
 		<class>biz.ostw.ee.vfs.VfsFile</class>
+		<class>biz.ostw.ee.vfs.VfsPathFake</class>
 		<class>biz.ostw.ee.vfs.VfsFileContent</class>
 
 
 		<properties>
-			<property name="hibernate.hbm2ddl.auto" value="validate" />
+			<!-- property name="hibernate.hbm2ddl.auto" value="validate" / -->
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />

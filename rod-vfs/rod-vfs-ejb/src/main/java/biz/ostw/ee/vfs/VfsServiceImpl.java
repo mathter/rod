@@ -68,7 +68,7 @@ public class VfsServiceImpl implements VfsService
 
         VfsFileContent vfsFileContent = new VfsFileContent();
 
-        vfsFileContent.setPath( vfsPath );
+        vfsFileContent.setId( vfsPath.getId() );
         this.em.persist( vfsFileContent );
 
         return vfsPath;

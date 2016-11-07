@@ -11,16 +11,13 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -38,23 +35,24 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Cacheable
 @Cache( usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "vfs" )
-@NamedQueries(
-{
-    @NamedQuery( name = "VfsPath_getByParent", query = "select o from VfsPath o where o.parent = :parent" ),
-    @NamedQuery( name = "VfsPath_getByRoot", query = "select o from VfsPath o where o.parent is null" )
+@NamedQueries( {
+
 } )
+@IdClass( VfsPathId.class )
 public abstract class VfsPath implements Serializable
 {
     private static final long serialVersionUID = -9102263499943206894L;
 
-    @Id
     @Column( name = "id" )
-    @SequenceGenerator( name = "vfs_paths_gen", sequenceName = "vfs_paths_seq", allocationSize = 1, initialValue = 1 )
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "vfs_paths_gen" )
     protected long id;
 
+    @Id
     @Column( name = "name", nullable = false )
     private String name;
+
+    @Id
+    @Column( name = "parent_id", insertable = false, updatable = false )
+    private long parentId;
 
     @Column( name = "create_date", nullable = false )
     @Temporal( TemporalType.TIMESTAMP )
@@ -66,7 +64,7 @@ public abstract class VfsPath implements Serializable
 
     @ManyToOne( fetch = FetchType.EAGER )
     @JoinColumn( name = "parent_id", nullable = true )
-    private VfsDir parent;
+    private VfsPathFake parent;
 
     public long getId()
     {
@@ -105,12 +103,12 @@ public abstract class VfsPath implements Serializable
 
     public VfsDir getParent()
     {
-        return this.parent;
+        return this.parent.getPath();
     }
 
     public void setParent( VfsDir parent )
     {
-        this.parent = parent;
+        this.parent = parent != null ? new VfsPathFake( parent ) : null;
     }
 
     public String getPath()
