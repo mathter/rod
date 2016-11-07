@@ -8,6 +8,7 @@
 
 		<jta-data-source>java:/datasources/rod</jta-data-source>
 
+		<class>biz.ostw.ee.vfs.VfsPath</class>
 		<class>biz.ostw.ee.vfs.VfsDir</class>
 		<class>biz.ostw.ee.vfs.VfsFile</class>
 		<class>biz.ostw.ee.vfs.VfsPathFake</class>

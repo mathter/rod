@@ -17,10 +17,10 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -35,9 +35,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Cacheable
 @Cache( usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "vfs" )
-@NamedQueries( {
-
-} )
 @IdClass( VfsPathId.class )
 public abstract class VfsPath implements Serializable
 {
@@ -66,7 +63,8 @@ public abstract class VfsPath implements Serializable
     @JoinColumn( name = "parent_id", nullable = true )
     private VfsPathFake parent;
 
-    @Column( name = "owner_id", nullable = true )
+    // @Column( name = "owner_id", nullable = true )
+    @Transient
     private Long ownerId;
 
     public long getId()

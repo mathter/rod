@@ -25,7 +25,6 @@
 				<version>2.5.1</version>
 				<configuration>
 					<ejbVersion>3.0</ejbVersion>
-
 				</configuration>
 			</plugin>
 		</plugins>

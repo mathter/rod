@@ -8,6 +8,9 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -58,16 +61,24 @@ public class VfsServiceImpl implements VfsService
     @Override
     public List< VfsPath > getByParent( VfsDir parent )
     {
-        TypedQuery< VfsPath > query;
+        CriteriaBuilder cb = this.em.getCriteriaBuilder();
+        CriteriaQuery< VfsPath > criteriaQuery = cb.createQuery( VfsPath.class );
+        Root< VfsPath > root = criteriaQuery.from( VfsPath.class );
+
+        cb.treat( root, VfsDir.class );
+        cb.treat( root, VfsFile.class );
+        
+        criteriaQuery.select( root );
 
         if ( parent != null )
         {
-            query = this.em.createNamedQuery( "VfsPath_getByParent", VfsPath.class );
-            query.setParameter( "parent", parent );
+            criteriaQuery.where( cb.equal( root.get( VfsPath_.parent ), new VfsPathFake( parent ) ) );
         } else
         {
-            query = this.em.createNamedQuery( "VfsPath_getByRoot", VfsPath.class );
+            criteriaQuery.where( cb.isNull( root.get( VfsPath_.parent ) ) );
         }
+
+        TypedQuery< VfsPath > query = em.createQuery( criteriaQuery );
 
         return query.getResultList();
     }
