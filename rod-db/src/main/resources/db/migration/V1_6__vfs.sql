@@ -13,12 +13,15 @@ with (
 
 create table vfs_paths
 (
-	id 				bigserial not null,
+	id 				bigint,
 	name			character varying(64) not null,
 	create_date		timestamp without time zone not null,
 	modify_date		timestamp without time zone not null,
 	parent_id		bigint,
 	type_id			int not null,
+	owner_id		bigint,
+	group_id		bigint,
+	access			smallint,
 	
 	constraint pkey_vfs_paths primary key (id),
 	constraint uk_vfs_paths_name_parent_id unique (name, parent_id),
@@ -56,4 +59,4 @@ create table vfs_file_contents
 insert into vfs_path_types (id, name) values (1, 'directory');
 insert into vfs_path_types (id, name) values (2, 'file');
 
-insert into vfs_paths (name, create_date, modify_date, parent_id, type_id) values ('', current_timestamp, current_timestamp, null, (select id from vfs_path_types where name = 'directory'));
+insert into vfs_paths (id, name, create_date, modify_date, parent_id, type_id) values (nextval('vfs_paths_seq'), '', current_timestamp, current_timestamp, null, (select id from vfs_path_types where name = 'directory'));

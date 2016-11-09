@@ -2,6 +2,7 @@ package biz.ostw.ee.vfs;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.IdClass;
 
 /**
  * @author mathter

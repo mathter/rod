@@ -11,16 +11,17 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -35,21 +36,18 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Cacheable
 @Cache( usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "vfs" )
-@IdClass( VfsPathId.class )
 public abstract class VfsPath implements Serializable
 {
     private static final long serialVersionUID = -9102263499943206894L;
 
+    @Id
     @Column( name = "id" )
+    @SequenceGenerator( name = "vfs_paths_gen", sequenceName = "vfs_paths_seq", allocationSize = 1, initialValue = 1 )
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "vfs_paths_gen" )
     protected long id;
 
-    @Id
     @Column( name = "name", nullable = false )
-    private String name;
-
-    @Id
-    @Column( name = "parent_id", insertable = false, updatable = false )
-    private long parentId;
+    protected String name;
 
     @Column( name = "create_date", nullable = false )
     @Temporal( TemporalType.TIMESTAMP )
@@ -61,11 +59,16 @@ public abstract class VfsPath implements Serializable
 
     @ManyToOne( fetch = FetchType.EAGER )
     @JoinColumn( name = "parent_id", nullable = true )
-    private VfsPathFake parent;
+    private VfsDir parent;
 
-    // @Column( name = "owner_id", nullable = true )
-    @Transient
+    @Column( name = "owner_id", nullable = true )
     private Long ownerId;
+
+    @Column( name = "group_id", nullable = true )
+    private Long groupId;
+
+    @Column( name = "access", nullable = true )
+    private short access;
 
     public long getId()
     {
@@ -104,17 +107,47 @@ public abstract class VfsPath implements Serializable
 
     public VfsDir getParent()
     {
-        return this.parent.getPath();
+        return this.parent;
     }
 
     public void setParent( VfsDir parent )
     {
-        this.parent = parent != null ? new VfsPathFake( parent ) : null;
+        this.parent = parent;
     }
 
     public String getPath()
     {
         return ( this.parent != null ? this.parent.getPath() : "" ) + "/" + this.name;
+    }
+
+    public Long getOwnerId()
+    {
+        return ownerId;
+    }
+
+    public void setOwnerId( Long ownerId )
+    {
+        this.ownerId = ownerId;
+    }
+
+    public Long getGroupId()
+    {
+        return groupId;
+    }
+
+    public void setGroupId( Long groupId )
+    {
+        this.groupId = groupId;
+    }
+
+    public short getAccess()
+    {
+        return access;
+    }
+
+    public void setAccess( short access )
+    {
+        this.access = access;
     }
 
     @Override

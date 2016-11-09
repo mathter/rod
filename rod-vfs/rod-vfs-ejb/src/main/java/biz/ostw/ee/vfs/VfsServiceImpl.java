@@ -65,9 +65,6 @@ public class VfsServiceImpl implements VfsService
         CriteriaQuery< VfsPath > criteriaQuery = cb.createQuery( VfsPath.class );
         Root< VfsPath > root = criteriaQuery.from( VfsPath.class );
 
-        cb.treat( root, VfsDir.class );
-        cb.treat( root, VfsFile.class );
-        
         criteriaQuery.select( root );
 
         if ( parent != null )
