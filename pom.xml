@@ -17,6 +17,7 @@
 	</properties>
 
 	<modules>
+		<module>persistence-ee</module>
 		<module>rod-user</module>
 		<module>rod-persistence</module>
 		<module>rod-web</module>
@@ -147,11 +148,6 @@
 				<version>5.2.3.Final</version>
 			</dependency>
 			<dependency>
-				<groupId>biz.ostw</groupId>
-				<artifactId>persistence-ee-api</artifactId>
-				<version>0.0.1</version>
-			</dependency>
-			<dependency>
 				<groupId>rod</groupId>
 				<artifactId>rod-persistence</artifactId>
 				<version>0.0.1</version>
@@ -184,11 +180,6 @@
 				<version>4.1</version>
 			</dependency>
 			<dependency>
-				<groupId>biz.ostw</groupId>
-				<artifactId>persistence-ee-jpa</artifactId>
-				<version>0.0.1</version>
-			</dependency>
-			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-infinispan</artifactId>
 				<version>5.2.3.Final</version>
@@ -213,6 +204,16 @@
 			<dependency>
 				<groupId>rod-config-fragment</groupId>
 				<artifactId>rod-config-fragment</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>biz.ostw</groupId>
+				<artifactId>persistence-ee-api</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>biz.ostw</groupId>
+				<artifactId>persistence-ee-jpa</artifactId>
 				<version>0.0.1</version>
 			</dependency>
 		</dependencies>
