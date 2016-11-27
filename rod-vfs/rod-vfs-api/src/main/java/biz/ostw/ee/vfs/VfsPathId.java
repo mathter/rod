@@ -5,41 +5,18 @@ import java.io.Serializable;
 /**
  * @author mathter
  */
-public class VfsPathId implements Serializable
-{
-    private static final long serialVersionUID = -4058902084265921709L;
+public class VfsPathId implements Serializable {
+	private static final long serialVersionUID = -4058902084265921709L;
 
-    private String name;
+	private long id;
 
-    private long parentId;
+	private String name;
 
-    public VfsPathId()
-    {
-    }
+	public VfsPathId() {
+	}
 
-    public VfsPathId( long parentId, String name )
-    {
-        this.parentId = parentId;
-        this.name = name;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName( String name )
-    {
-        this.name = name;
-    }
-
-    public long getParentId()
-    {
-        return parentId;
-    }
-
-    public void setParentId( long parentId )
-    {
-        this.parentId = parentId;
-    }
+	public VfsPathId(long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
 }

@@ -12,37 +12,35 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * @author mathter
+ */
 @Entity
-@Table( name = "vfs_file_contents" )
-@Access( AccessType.FIELD )
-public class VfsFileContent implements Serializable
-{
-    private static final long serialVersionUID = -4992903649621898395L;
+@Table(name = "vfs_file_contents")
+@Access(AccessType.FIELD)
+public class VfsFileContent implements Serializable {
+	private static final long serialVersionUID = -4992903649621898395L;
 
-    @Id
-    private long id;
+	@Id
+	private long id;
 
-    @Basic( fetch = FetchType.LAZY )
-    @Column( name = "content" )
-    private Blob content;
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name = "content")
+	private Blob content;
 
-    public long getId()
-    {
-        return id;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setId( long id )
-    {
-        this.id = id;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public Blob getContent()
-    {
-        return content;
-    }
+	public Blob getContent() {
+		return content;
+	}
 
-    public void setContent( Blob content )
-    {
-        this.content = content;
-    }
+	public void setContent(Blob content) {
+		this.content = content;
+	}
 }

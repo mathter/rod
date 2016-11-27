@@ -26,6 +26,10 @@
 			<groupId>biz.ostw</groupId>
 			<artifactId>persistence-ee-jpa</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>rod</groupId>
+			<artifactId>rod-user-api</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

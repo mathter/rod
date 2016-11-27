@@ -2,6 +2,7 @@ package biz.ostw.rod.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -11,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import biz.ostw.ee.vfs.VfsDir;
 import biz.ostw.ee.vfs.VfsPath;
 import biz.ostw.ee.vfs.VfsService;
 
@@ -31,7 +31,7 @@ public class TestAddFile extends HttpServlet
         String name = request.getParameter( "name" );
         String type = request.getParameter( "type" );
 
-        VfsDir root = (VfsDir) this.vfsService.getByParent( null ).stream().findFirst().get();
+        VfsPath root = (VfsPath) this.vfsService.getByParent( null ).stream().findFirst().get();
 
         switch ( type )
         {
@@ -45,15 +45,21 @@ public class TestAddFile extends HttpServlet
 
         default:
         {
+            PrintWriter w = response.getWriter();
+
             List< VfsPath > paths = this.vfsService.getByParent( null );
+            LinkedList< List< VfsPath > > stack = new LinkedList<>();
+            stack.push( null );
 
-            final PrintWriter w = response.getWriter();
-
-            paths.stream().forEach( path -> {
-                w.println( "------------------" );
-                w.print( "is dir=" + ( path instanceof VfsDir ) + " " );
-                w.println( path.getPath() );
-            } );
+            do
+            {
+                stack.push( paths );
+                
+                for ( VfsPath path : paths )
+                {
+                    w.println( path.getPath() );
+                }
+            } while ( stack.size() > 0 );
         }
             break;
         }

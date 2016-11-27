@@ -11,8 +11,9 @@
 		<class>biz.ostw.ee.vfs.VfsPath</class>
 		<class>biz.ostw.ee.vfs.VfsDir</class>
 		<class>biz.ostw.ee.vfs.VfsFile</class>
-		<class>biz.ostw.ee.vfs.VfsPathFake</class>
+		<class>biz.ostw.ee.vfs.FakeVfsPath</class>
 		<class>biz.ostw.ee.vfs.VfsFileContent</class>
+		<class>biz.ostw.ee.vfs.VfsType</class>
 
 
 		<properties>

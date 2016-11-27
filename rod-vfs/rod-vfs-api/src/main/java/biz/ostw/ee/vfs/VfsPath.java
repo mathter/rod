@@ -7,15 +7,14 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -32,11 +31,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table( name = "vfs_paths" )
 @Access( AccessType.FIELD )
-@DiscriminatorColumn( name = "type_id", discriminatorType = DiscriminatorType.INTEGER )
-@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Cacheable
 @Cache( usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "vfs" )
-public abstract class VfsPath implements Serializable
+@IdClass( VfsPathId.class )
+public class VfsPath implements Serializable
 {
     private static final long serialVersionUID = -9102263499943206894L;
 
@@ -46,7 +44,8 @@ public abstract class VfsPath implements Serializable
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "vfs_paths_gen" )
     protected long id;
 
-    @Column( name = "name", nullable = false )
+    @Id
+    @Column( name = "name" )
     protected String name;
 
     @Column( name = "create_date", nullable = false )
@@ -58,8 +57,8 @@ public abstract class VfsPath implements Serializable
     private Date modifyDate;
 
     @ManyToOne( fetch = FetchType.EAGER )
-    @JoinColumn( name = "parent_id", nullable = true )
-    private VfsDir parent;
+    @JoinColumn( name = "parent_id" )
+    private FakeVfsPath parent;
 
     @Column( name = "owner_id", nullable = true )
     private Long ownerId;
@@ -67,8 +66,11 @@ public abstract class VfsPath implements Serializable
     @Column( name = "group_id", nullable = true )
     private Long groupId;
 
-    @Column( name = "access", nullable = true )
-    private short access;
+    private VfsAccess access;
+
+    @Enumerated( EnumType.ORDINAL )
+    @Column( name = "type_id", nullable = false )
+    private VFS_TYPE type;
 
     public long getId()
     {
@@ -105,19 +107,34 @@ public abstract class VfsPath implements Serializable
         this.modifyDate = date;
     }
 
-    public VfsDir getParent()
+    public VfsPath getParent()
     {
-        return this.parent;
+        return this.parent != null ? this.parent.getPath() : null;
     }
 
-    public void setParent( VfsDir parent )
+    public void setParent( VfsPath parent )
     {
-        this.parent = parent;
+        this.parent = parent != null ? new FakeVfsPath( parent ) : null;
     }
 
     public String getPath()
     {
         return ( this.parent != null ? this.parent.getPath() : "" ) + "/" + this.name;
+    }
+
+    public VFS_TYPE getType()
+    {
+        return type;
+    }
+
+    public void setType( VFS_TYPE type )
+    {
+        if ( type == null )
+        {
+            throw new NullPointerException();
+        }
+
+        this.type = type;
     }
 
     public Long getOwnerId()
@@ -140,12 +157,12 @@ public abstract class VfsPath implements Serializable
         this.groupId = groupId;
     }
 
-    public short getAccess()
+    public VfsAccess getAccess()
     {
-        return access;
+        return this.access;
     }
 
-    public void setAccess( short access )
+    public void setAccess( VfsAccess access )
     {
         this.access = access;
     }

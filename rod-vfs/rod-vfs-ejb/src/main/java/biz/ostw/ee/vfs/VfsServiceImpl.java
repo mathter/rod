@@ -59,7 +59,7 @@ public class VfsServiceImpl implements VfsService
     }
 
     @Override
-    public List< VfsPath > getByParent( VfsDir parent )
+    public List< VfsPath > getByParent( VfsPath parent )
     {
         CriteriaBuilder cb = this.em.getCriteriaBuilder();
         CriteriaQuery< VfsPath > criteriaQuery = cb.createQuery( VfsPath.class );
@@ -69,7 +69,7 @@ public class VfsServiceImpl implements VfsService
 
         if ( parent != null )
         {
-            criteriaQuery.where( cb.equal( root.get( VfsPath_.parent ), new VfsPathFake( parent ) ) );
+            criteriaQuery.where( cb.equal( root.get( VfsPath_.parent ), new FakeVfsPath( parent ) ) );
         } else
         {
             criteriaQuery.where( cb.isNull( root.get( VfsPath_.parent ) ) );
@@ -81,39 +81,51 @@ public class VfsServiceImpl implements VfsService
     }
 
     @Override
-    public VfsDir createDir( VfsDir parent, String name ) throws VfsPathAlreadyExistsException, NullPointerException
+    public VfsPath createDir( VfsPath parent, String name ) throws VfsPathAlreadyExistsException, NullPointerException
     {
         if ( parent == null )
         {
             throw new NullPointerException();
         }
 
+        if ( parent.getType() != VFS_TYPE.DIRECTORY )
+        {
+            throw new IllegalArgumentException( "parent is not directory! parent has type " + parent.getType() );
+        }
+
         Date date = new Date();
-        VfsDir vfsPath = new VfsDir();
+        VfsPath vfsPath = new VfsPath();
 
         vfsPath.setParent( parent );
         vfsPath.setName( name );
         vfsPath.setCreateDate( date );
         vfsPath.setModifyDate( date );
+        vfsPath.setType( VFS_TYPE.DIRECTORY );
 
         return this.em.merge( vfsPath );
     }
 
     @Override
-    public VfsFile createFile( VfsDir parent, String name ) throws VfsPathAlreadyExistsException, NullPointerException
+    public VfsPath createFile( VfsPath parent, String name ) throws VfsPathAlreadyExistsException, NullPointerException
     {
         if ( parent == null )
         {
             throw new NullPointerException();
         }
 
+        if ( parent.getType() != VFS_TYPE.DIRECTORY )
+        {
+            throw new IllegalArgumentException( "parent is not directory! parent has type " + parent.getType() );
+        }
+
         Date date = new Date();
-        VfsFile vfsPath = new VfsFile();
+        VfsPath vfsPath = new VfsPath();
 
         vfsPath.setParent( parent );
         vfsPath.setName( name );
         vfsPath.setCreateDate( date );
         vfsPath.setModifyDate( date );
+        vfsPath.setType( VFS_TYPE.FILE );
 
         this.em.persist( vfsPath );
 
@@ -139,7 +151,7 @@ public class VfsServiceImpl implements VfsService
     }
 
     @Override
-    public VfsPath move( VfsPath path, VfsDir newRoot ) throws VfsPathAlreadyExistsException, NullPointerException
+    public VfsPath move( VfsPath path, VfsPath newRoot ) throws VfsPathAlreadyExistsException, NullPointerException
     {
         if ( path == null || newRoot == null )
         {
@@ -180,12 +192,12 @@ public class VfsServiceImpl implements VfsService
             throw new VfsPathDoNotExists( path );
         }
 
-        if ( path instanceof VfsFile || force )
+        if ( path.getType() == VFS_TYPE.FILE || force )
         {
             this.em.remove( this.em.merge( path ) );
         } else
         {
-            List< VfsPath > childs = this.getByParent( (VfsDir) path );
+            List< VfsPath > childs = this.getByParent( (VfsPath) path );
 
             if ( childs.size() == 0 )
             {
