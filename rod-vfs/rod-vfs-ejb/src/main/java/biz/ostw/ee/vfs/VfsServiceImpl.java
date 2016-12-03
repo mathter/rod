@@ -69,10 +69,10 @@ public class VfsServiceImpl implements VfsService
 
         if ( parent != null )
         {
-            criteriaQuery.where( cb.equal( root.get( VfsPath_.parent ), new FakeVfsPath( parent ) ) );
+            criteriaQuery.where( cb.equal( root.get( VfsPath_.parent_id ), parent.id ) );
         } else
         {
-            criteriaQuery.where( cb.isNull( root.get( VfsPath_.parent ) ) );
+            criteriaQuery.where( cb.isNull( root.get( VfsPath_.parent_id ) ) );
         }
 
         TypedQuery< VfsPath > query = em.createQuery( criteriaQuery );
@@ -96,13 +96,15 @@ public class VfsServiceImpl implements VfsService
         Date date = new Date();
         VfsPath vfsPath = new VfsPath();
 
-        vfsPath.setParent( parent );
+        vfsPath.setParent_id( parent.getId() );
         vfsPath.setName( name );
         vfsPath.setCreateDate( date );
         vfsPath.setModifyDate( date );
         vfsPath.setType( VFS_TYPE.DIRECTORY );
 
-        return this.em.merge( vfsPath );
+        this.em.persist( vfsPath );
+
+        return vfsPath;
     }
 
     @Override
@@ -121,7 +123,7 @@ public class VfsServiceImpl implements VfsService
         Date date = new Date();
         VfsPath vfsPath = new VfsPath();
 
-        vfsPath.setParent( parent );
+        vfsPath.parent_id = parent.id;
         vfsPath.setName( name );
         vfsPath.setCreateDate( date );
         vfsPath.setModifyDate( date );
@@ -158,7 +160,7 @@ public class VfsServiceImpl implements VfsService
             throw new NullPointerException();
         }
 
-        path.setParent( newRoot );
+        path.parent_id = newRoot.id;
 
         return this.em.merge( path );
     }

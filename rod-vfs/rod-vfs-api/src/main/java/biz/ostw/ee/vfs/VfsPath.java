@@ -10,17 +10,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -39,14 +37,18 @@ public class VfsPath implements Serializable
     private static final long serialVersionUID = -9102263499943206894L;
 
     @Id
-    @Column( name = "id" )
-    @SequenceGenerator( name = "vfs_paths_gen", sequenceName = "vfs_paths_seq", allocationSize = 1, initialValue = 1 )
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "vfs_paths_gen" )
-    protected long id;
+    @Column( name = "parent_id" )
+    // @SequenceGenerator( name = "vfs_paths_gen", sequenceName = "vfs_paths_seq", allocationSize = 1, initialValue = 1
+    // )
+    // @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "vfs_paths_gen" )
+    protected Long parent_id;
 
     @Id
     @Column( name = "name" )
     protected String name;
+
+    @Column( name = "id", insertable = false, updatable = false, unique = true )
+    protected long id;
 
     @Column( name = "create_date", nullable = false )
     @Temporal( TemporalType.TIMESTAMP )
@@ -55,10 +57,6 @@ public class VfsPath implements Serializable
     @Column( name = "modify_date", nullable = false )
     @Temporal( TemporalType.TIMESTAMP )
     private Date modifyDate;
-
-    @ManyToOne( fetch = FetchType.EAGER )
-    @JoinColumn( name = "parent_id" )
-    private FakeVfsPath parent;
 
     @Column( name = "owner_id", nullable = true )
     private Long ownerId;
@@ -72,9 +70,27 @@ public class VfsPath implements Serializable
     @Column( name = "type_id", nullable = false )
     private VFS_TYPE type;
 
+    @Transient
+    private String path;
+
     public long getId()
     {
         return id;
+    }
+
+    public void setId( Long id )
+    {
+        this.id = id;
+    }
+
+    public Long getParent_id()
+    {
+        return parent_id;
+    }
+
+    public void setParent_id( Long parent_id )
+    {
+        this.parent_id = parent_id;
     }
 
     public String getName()
@@ -105,21 +121,6 @@ public class VfsPath implements Serializable
     public void setModifyDate( Date date )
     {
         this.modifyDate = date;
-    }
-
-    public VfsPath getParent()
-    {
-        return this.parent != null ? this.parent.getPath() : null;
-    }
-
-    public void setParent( VfsPath parent )
-    {
-        this.parent = parent != null ? new FakeVfsPath( parent ) : null;
-    }
-
-    public String getPath()
-    {
-        return ( this.parent != null ? this.parent.getPath() : "" ) + "/" + this.name;
     }
 
     public VFS_TYPE getType()
@@ -165,6 +166,16 @@ public class VfsPath implements Serializable
     public void setAccess( VfsAccess access )
     {
         this.access = access;
+    }
+
+    public String getPath()
+    {
+        return this.path;
+    }
+
+    protected void setPath( String path )
+    {
+        this.path = path;
     }
 
     @Override

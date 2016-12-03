@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import biz.ostw.ee.vfs.VFS_TYPE;
 import biz.ostw.ee.vfs.VfsPath;
 import biz.ostw.ee.vfs.VfsService;
 
@@ -47,23 +48,26 @@ public class TestAddFile extends HttpServlet
         {
             PrintWriter w = response.getWriter();
 
-            List< VfsPath > paths = this.vfsService.getByParent( null );
-            LinkedList< List< VfsPath > > stack = new LinkedList<>();
-            stack.push( null );
-
-            do
-            {
-                stack.push( paths );
-                
-                for ( VfsPath path : paths )
-                {
-                    w.println( path.getPath() );
-                }
-            } while ( stack.size() > 0 );
+            ls( this.vfsService.getByParent( null ).stream().findFirst().get(), w );
         }
             break;
         }
 
+    }
+
+    private void ls( VfsPath path, PrintWriter w )
+    {
+        w.println( path );
+
+        List< VfsPath > childs = this.vfsService.getByParent( path );
+
+        for ( VfsPath child : childs )
+        {
+            if ( child.getType() == VFS_TYPE.DIRECTORY )
+            {
+                ls( child, w );
+            }
+        }
     }
 
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException

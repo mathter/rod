@@ -77,5 +77,13 @@
 			<artifactId>rod-vfs-ejb</artifactId>
 			<type>ejb</type>
 		</dependency>
+		<dependency>
+			<groupId>biz.ostw</groupId>
+			<artifactId>persistence-ee-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>biz.ostw</groupId>
+			<artifactId>persistence-ee-jpa</artifactId>
+		</dependency>
 	</dependencies>
 </project>

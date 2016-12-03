@@ -35,15 +35,6 @@ with (
   oids=false
 );
 
-
-create sequence vfs_paths_seq
-  increment 1
-  minvalue 1
-  maxvalue 9223372036854775807
-  start 1
-  cache 1;
-
-
 create table vfs_file_contents
 (
 	id 				bigint	not null,
@@ -59,4 +50,4 @@ create table vfs_file_contents
 insert into vfs_path_types (id, name) values (0, 'directory');
 insert into vfs_path_types (id, name) values (1, 'file');
 
-insert into vfs_paths (id, name, create_date, modify_date, parent_id, type_id) values (nextval('vfs_paths_seq'), '', current_timestamp, current_timestamp, null, (select id from vfs_path_types where name = 'directory'));
+insert into vfs_paths (name, create_date, modify_date, parent_id, type_id) values ('', current_timestamp, current_timestamp, null, (select id from vfs_path_types where name = 'directory'));
