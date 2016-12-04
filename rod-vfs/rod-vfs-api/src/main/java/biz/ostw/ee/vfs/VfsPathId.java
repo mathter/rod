@@ -2,28 +2,34 @@ package biz.ostw.ee.vfs;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
 /**
  * @author mathter
  */
+@Embeddable
 public class VfsPathId implements Serializable
 {
     private static final long serialVersionUID = -4058902084265921709L;
 
-    private Long id;
+    @Column( name = "id" )
+    private long id;
 
+    @Column( name = "name" )
     private String name;
 
     public VfsPathId()
     {
     }
 
-    public VfsPathId( Long id, String name )
+    public VfsPathId( long parentId, String name )
     {
-        this.id = id;
+        this.id = parentId;
         this.name = name;
     }
 
-    public Long getId()
+    public long getParentId()
     {
         return id;
     }
@@ -33,12 +39,22 @@ public class VfsPathId implements Serializable
         return name;
     }
 
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public void setParentId( long parentId )
+    {
+        this.id = parentId;
+    }
+
     @Override
     public int hashCode()
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( id == null ) ? 0 : id.hashCode() );
+        result = prime * result + (int) ( id ^ ( id >>> 32 ) );
         result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
         return result;
     }
@@ -53,11 +69,7 @@ public class VfsPathId implements Serializable
         if ( getClass() != obj.getClass() )
             return false;
         VfsPathId other = (VfsPathId) obj;
-        if ( id == null )
-        {
-            if ( other.id != null )
-                return false;
-        } else if ( !id.equals( other.id ) )
+        if ( id != other.id )
             return false;
         if ( name == null )
         {

@@ -1,6 +1,8 @@
 package biz.ostw.ee.vfs;
 
+import java.util.ArrayDeque;
 import java.util.Date;
+import java.util.Deque;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -53,9 +55,35 @@ public class VfsServiceImpl implements VfsService
             throw new IllegalArgumentException( "Path is not absolute! Path is '" + path + "'" );
         }
 
-        String[] pathParts = path.split( "" + PATH_SEPARATOR_CHAR );
+        String[] pathParts = path.split( PATH_SEPARATOR_STRING );
 
-        return null;
+        if ( pathParts.length == 0 )
+        {
+            pathParts = new String[]
+            {
+                ""
+            };
+        }
+
+        VfsPath vfsPath = null;
+
+        for ( String pathPart : pathParts )
+        {
+            long backRef = vfsPath != null ? vfsPath.getBackRef() : 0;
+            vfsPath = this.em.find( VfsPath.class, new VfsPathId( backRef, pathPart ) );
+
+            if ( vfsPath == null )
+            {
+                break;
+            }
+        }
+
+        if ( vfsPath != null )
+        {
+            vfsPath.setPath( path );
+        }
+
+        return vfsPath;
     }
 
     @Override
@@ -69,15 +97,34 @@ public class VfsServiceImpl implements VfsService
 
         if ( parent != null )
         {
-            criteriaQuery.where( cb.equal( root.get( VfsPath_.parent_id ), parent.id ) );
+            criteriaQuery.where( cb.equal( root.get( VfsPath_.id ).get( VfsPathId_.id ), 0 ) );
         } else
         {
-            criteriaQuery.where( cb.isNull( root.get( VfsPath_.parent_id ) ) );
+            criteriaQuery.where( cb.equal( root.get( VfsPath_.id ).get( VfsPathId_.id ), 0L ) );
         }
 
         TypedQuery< VfsPath > query = em.createQuery( criteriaQuery );
 
-        return query.getResultList();
+        return setPath( parent, query.getResultList() );
+    }
+
+    private static VfsPath setPath( VfsPath parent, VfsPath path )
+    {
+        final String parentPath = parent != null ? parent.getPath().intern() : PATH_SEPARATOR_STRING;
+
+        path.setPath( parentPath + ( parentPath.equals( PATH_SEPARATOR_STRING ) ? "" : PATH_SEPARATOR_CHAR ) + path.getName() );
+
+        return path;
+    }
+
+    private static List< VfsPath > setPath( VfsPath parent, List< VfsPath > paths )
+    {
+        final String parentPath = parent != null ? parent.getPath().intern() : PATH_SEPARATOR_STRING;
+
+        paths.stream().forEach(
+            e -> e.setPath( parentPath + ( parentPath.equals( PATH_SEPARATOR_STRING ) ? "" : PATH_SEPARATOR_CHAR ) + e.getName() ) );
+
+        return paths;
     }
 
     @Override
@@ -96,7 +143,7 @@ public class VfsServiceImpl implements VfsService
         Date date = new Date();
         VfsPath vfsPath = new VfsPath();
 
-        vfsPath.setParent_id( parent.getId() );
+        vfsPath.setParentId( parent.getBackRef() );
         vfsPath.setName( name );
         vfsPath.setCreateDate( date );
         vfsPath.setModifyDate( date );
@@ -104,7 +151,7 @@ public class VfsServiceImpl implements VfsService
 
         this.em.persist( vfsPath );
 
-        return vfsPath;
+        return setPath( parent, vfsPath );
     }
 
     @Override
@@ -122,8 +169,6 @@ public class VfsServiceImpl implements VfsService
 
         Date date = new Date();
         VfsPath vfsPath = new VfsPath();
-
-        vfsPath.parent_id = parent.id;
         vfsPath.setName( name );
         vfsPath.setCreateDate( date );
         vfsPath.setModifyDate( date );
@@ -133,7 +178,7 @@ public class VfsServiceImpl implements VfsService
 
         VfsFileContent vfsFileContent = new VfsFileContent();
 
-        vfsFileContent.setId( vfsPath.getId() );
+        // vfsFileContent.setId( vfsPath.getId() );
         this.em.persist( vfsFileContent );
 
         return vfsPath;
@@ -160,8 +205,6 @@ public class VfsServiceImpl implements VfsService
             throw new NullPointerException();
         }
 
-        path.parent_id = newRoot.id;
-
         return this.em.merge( path );
     }
 
@@ -173,10 +216,10 @@ public class VfsServiceImpl implements VfsService
             throw new NullPointerException();
         }
 
-        if ( path.getId() == 0 )
-        {
-            throw new VfsPathDoNotExists( path );
-        }
+        // if ( path.getId() == 0 )
+        // {
+        // throw new VfsPathDoNotExists( path );
+        // }
 
         this.remove( path, false );
     }
@@ -189,10 +232,10 @@ public class VfsServiceImpl implements VfsService
             throw new NullPointerException();
         }
 
-        if ( path.getId() == 0 )
-        {
-            throw new VfsPathDoNotExists( path );
-        }
+        // if ( path.getId() == 0 )
+        // {
+        // throw new VfsPathDoNotExists( path );
+        // }
 
         if ( path.getType() == VFS_TYPE.FILE || force )
         {
