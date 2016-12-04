@@ -5,16 +5,14 @@ import java.util.Date;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Basic;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.FetchType;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,22 +29,14 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Access( AccessType.FIELD )
 @Cacheable
 @Cache( usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "vfs" )
-@IdClass( VfsPathId.class )
 public class VfsPath implements Serializable
 {
     private static final long serialVersionUID = -9102263499943206894L;
 
-    @Id
-    @Column( name = "parent_id" )
-    // @SequenceGenerator( name = "vfs_paths_gen", sequenceName = "vfs_paths_seq", allocationSize = 1, initialValue = 1
-    // )
-    // @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "vfs_paths_gen" )
-    protected Long parent_id;
+    @EmbeddedId
+    private VfsPathId key;
 
-    @Id
-    @Column( name = "name" )
-    protected String name;
-
+    @Basic( fetch = FetchType.EAGER )
     @Column( name = "id", insertable = false, updatable = false, unique = true )
     protected long id;
 
@@ -83,24 +73,36 @@ public class VfsPath implements Serializable
         this.id = id;
     }
 
-    public Long getParent_id()
+    public Long getParentId()
     {
-        return parent_id;
+        return this.key != null ? this.key.getParentId() : null;
     }
 
-    public void setParent_id( Long parent_id )
+    public void setParentId( Long parentId )
     {
-        this.parent_id = parent_id;
+        if ( this.key != null )
+        {
+            this.key.setParentId( parentId );
+        } else
+        {
+            this.key = new VfsPathId( parentId, null );
+        }
     }
 
     public String getName()
     {
-        return this.name;
+        return this.key != null ? this.key.getName() : null;
     }
 
     public void setName( String name )
     {
-        this.name = name;
+        if ( this.key != null )
+        {
+            this.key.setName( name );
+        } else
+        {
+            this.key = new VfsPathId( null, name );
+        }
     }
 
     public Date getCreateDate()
@@ -173,7 +175,7 @@ public class VfsPath implements Serializable
         return this.path;
     }
 
-    protected void setPath( String path )
+    public void setPath( String path )
     {
         this.path = path;
     }

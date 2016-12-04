@@ -69,15 +69,33 @@ public class VfsServiceImpl implements VfsService
 
         if ( parent != null )
         {
-            criteriaQuery.where( cb.equal( root.get( VfsPath_.parent_id ), parent.id ) );
+            criteriaQuery.where( cb.equal( root.get( VfsPath_.key ).get( VfsPathId_.parentId ), parent.id ) );
         } else
         {
-            criteriaQuery.where( cb.isNull( root.get( VfsPath_.parent_id ) ) );
+            criteriaQuery.where( cb.isNull( root.get( VfsPath_.key ).get( VfsPathId_.parentId ) ) );
         }
 
         TypedQuery< VfsPath > query = em.createQuery( criteriaQuery );
 
-        return query.getResultList();
+        return setPath( parent, query.getResultList() );
+    }
+
+    private static VfsPath setPath( VfsPath parent, VfsPath path )
+    {
+        final String parentPath = parent != null ? parent.getPath() : "/";
+
+        path.setPath( parentPath + '/' + path.getName() );
+
+        return path;
+    }
+
+    private static List< VfsPath > setPath( VfsPath parent, List< VfsPath > paths )
+    {
+        final String parentPath = parent != null ? parent.getPath() : "";
+
+        paths.stream().forEach( e -> e.setPath( parentPath + '/' + e.getName() ) );
+
+        return paths;
     }
 
     @Override
@@ -96,7 +114,7 @@ public class VfsServiceImpl implements VfsService
         Date date = new Date();
         VfsPath vfsPath = new VfsPath();
 
-        vfsPath.setParent_id( parent.getId() );
+        vfsPath.setParentId( parent.getId() );
         vfsPath.setName( name );
         vfsPath.setCreateDate( date );
         vfsPath.setModifyDate( date );
@@ -104,7 +122,7 @@ public class VfsServiceImpl implements VfsService
 
         this.em.persist( vfsPath );
 
-        return vfsPath;
+        return setPath( parent, vfsPath );
     }
 
     @Override
@@ -122,8 +140,6 @@ public class VfsServiceImpl implements VfsService
 
         Date date = new Date();
         VfsPath vfsPath = new VfsPath();
-
-        vfsPath.parent_id = parent.id;
         vfsPath.setName( name );
         vfsPath.setCreateDate( date );
         vfsPath.setModifyDate( date );
@@ -159,8 +175,6 @@ public class VfsServiceImpl implements VfsService
         {
             throw new NullPointerException();
         }
-
-        path.parent_id = newRoot.id;
 
         return this.em.merge( path );
     }

@@ -2,21 +2,85 @@ package biz.ostw.ee.vfs;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
 /**
  * @author mathter
  */
-public class VfsPathId implements Serializable {
-	private static final long serialVersionUID = -4058902084265921709L;
+@Embeddable
+public class VfsPathId implements Serializable
+{
+    private static final long serialVersionUID = -4058902084265921709L;
 
-	private long id;
+    @Column( name = "parent_id" )
+    private Long parentId;
 
-	private String name;
+    @Column( name = "name" )
+    private String name;
 
-	public VfsPathId() {
-	}
+    public VfsPathId()
+    {
+    }
 
-	public VfsPathId(long id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    public VfsPathId( Long parentId, String name )
+    {
+        this.parentId = parentId;
+        this.name = name;
+    }
+
+    public long getParentId()
+    {
+        return parentId;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public void setParentId( Long parentId )
+    {
+        this.parentId = parentId;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        result = prime * result + ( ( parentId == null ) ? 0 : parentId.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+        if ( getClass() != obj.getClass() )
+            return false;
+        VfsPathId other = (VfsPathId) obj;
+        if ( name == null )
+        {
+            if ( other.name != null )
+                return false;
+        } else if ( !name.equals( other.name ) )
+            return false;
+        if ( parentId == null )
+        {
+            if ( other.parentId != null )
+                return false;
+        } else if ( !parentId.equals( other.parentId ) )
+            return false;
+        return true;
+    }
 }
