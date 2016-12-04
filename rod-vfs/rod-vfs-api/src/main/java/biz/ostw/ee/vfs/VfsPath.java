@@ -5,14 +5,12 @@ import java.util.Date;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.Basic;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -34,11 +32,7 @@ public class VfsPath implements Serializable
     private static final long serialVersionUID = -9102263499943206894L;
 
     @EmbeddedId
-    private VfsPathId key;
-
-    @Basic( fetch = FetchType.EAGER )
-    @Column( name = "id", insertable = false, updatable = false, unique = true )
-    protected long id;
+    private VfsPathId id;
 
     @Column( name = "create_date", nullable = false )
     @Temporal( TemporalType.TIMESTAMP )
@@ -60,48 +54,41 @@ public class VfsPath implements Serializable
     @Column( name = "type_id", nullable = false )
     private VFS_TYPE type;
 
+    @Column( name = "back_ref", insertable = false, updatable = false )
+    private long backRef;
+
     @Transient
     private String path;
 
-    public long getId()
-    {
-        return id;
-    }
-
-    public void setId( Long id )
-    {
-        this.id = id;
-    }
-
     public Long getParentId()
     {
-        return this.key != null ? this.key.getParentId() : null;
+        return this.id != null ? this.id.getParentId() : null;
     }
 
     public void setParentId( Long parentId )
     {
-        if ( this.key != null )
+        if ( this.id != null )
         {
-            this.key.setParentId( parentId );
+            this.id.setParentId( parentId );
         } else
         {
-            this.key = new VfsPathId( parentId, null );
+            this.id = new VfsPathId( parentId, null );
         }
     }
 
     public String getName()
     {
-        return this.key != null ? this.key.getName() : null;
+        return this.id != null ? this.id.getName() : null;
     }
 
     public void setName( String name )
     {
-        if ( this.key != null )
+        if ( this.id != null )
         {
-            this.key.setName( name );
+            this.id.setName( name );
         } else
         {
-            this.key = new VfsPathId( null, name );
+            this.id = new VfsPathId( 0, name );
         }
     }
 
@@ -180,16 +167,26 @@ public class VfsPath implements Serializable
         this.path = path;
     }
 
+    public long getBackRef()
+    {
+        return backRef;
+    }
+
+    public void setBackRef( long backRef )
+    {
+        this.backRef = backRef;
+    }
+
     @Override
     public int hashCode()
     {
-        return (int) this.id;
+        return this.id.hashCode();
     }
 
     @Override
     public boolean equals( Object obj )
     {
-        return this == obj || ( this.getClass().equals( obj.getClass() ) && this.id == ( (VfsPath) obj ).id );
+        return this == obj || ( this.getClass().equals( obj.getClass() ) && this.id.equals( ( (VfsPath) obj ).id ) );
     }
 
     @Override

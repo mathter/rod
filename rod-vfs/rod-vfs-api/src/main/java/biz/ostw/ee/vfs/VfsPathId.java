@@ -13,8 +13,8 @@ public class VfsPathId implements Serializable
 {
     private static final long serialVersionUID = -4058902084265921709L;
 
-    @Column( name = "parent_id" )
-    private Long parentId;
+    @Column( name = "id" )
+    private long id;
 
     @Column( name = "name" )
     private String name;
@@ -23,15 +23,15 @@ public class VfsPathId implements Serializable
     {
     }
 
-    public VfsPathId( Long parentId, String name )
+    public VfsPathId( long parentId, String name )
     {
-        this.parentId = parentId;
+        this.id = parentId;
         this.name = name;
     }
 
     public long getParentId()
     {
-        return parentId;
+        return id;
     }
 
     public String getName()
@@ -44,9 +44,9 @@ public class VfsPathId implements Serializable
         this.name = name;
     }
 
-    public void setParentId( Long parentId )
+    public void setParentId( long parentId )
     {
-        this.parentId = parentId;
+        this.id = parentId;
     }
 
     @Override
@@ -54,8 +54,8 @@ public class VfsPathId implements Serializable
     {
         final int prime = 31;
         int result = 1;
+        result = prime * result + (int) ( id ^ ( id >>> 32 ) );
         result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
-        result = prime * result + ( ( parentId == null ) ? 0 : parentId.hashCode() );
         return result;
     }
 
@@ -69,17 +69,13 @@ public class VfsPathId implements Serializable
         if ( getClass() != obj.getClass() )
             return false;
         VfsPathId other = (VfsPathId) obj;
+        if ( id != other.id )
+            return false;
         if ( name == null )
         {
             if ( other.name != null )
                 return false;
         } else if ( !name.equals( other.name ) )
-            return false;
-        if ( parentId == null )
-        {
-            if ( other.parentId != null )
-                return false;
-        } else if ( !parentId.equals( other.parentId ) )
             return false;
         return true;
     }

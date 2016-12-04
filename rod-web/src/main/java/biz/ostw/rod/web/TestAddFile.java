@@ -48,7 +48,9 @@ public class TestAddFile extends HttpServlet
         {
             PrintWriter w = response.getWriter();
 
-            ls( this.vfsService.getByParent( null ).stream().findFirst().get(), w );
+            // ls( this.vfsService.getByParent( null ).stream().findFirst().get(), w );
+
+            VfsPath vfsPath = this.vfsService.getByPath( "/aaeer" );
         }
             break;
         }
