@@ -112,6 +112,9 @@
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
+            <logger category="org.hibernate" use-parent-handlers="true">
+                <level name="DEBUG"/>
+            </logger>
             <root-logger>
                 <level name="INFO"/>
                 <handlers>
@@ -143,7 +146,7 @@
                 <datasource jta="true" jndi-name="java:/datasources/rod" pool-name="rod" enabled="true" use-ccm="true">
                     <connection-url>jdbc:postgresql://localhost:5432/rod</connection-url>
                     <driver-class>org.postgresql.Driver</driver-class>
-                    <driver>postgresql-9.4-1203.jdbc41.jar</driver>
+                    <driver>postgresql-9.4-1203.jdbc42.jar</driver>
                     <security>
                         <user-name>postgres</user-name>
                         <password>postgres</password>
@@ -300,8 +303,8 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jsf:1.0"/>
         <subsystem xmlns="urn:jboss:domain:mail:2.0">
-            <mail-session name="default" jndi-name="java:jboss/mail/Default">
-                <smtp-server outbound-socket-binding-ref="mail-smtp"/>
+            <mail-session name="rod-mail" jndi-name="java:/mail/rod">
+                <smtp-server outbound-socket-binding-ref="mail-smtp" ssl="true" username="mailisername" password="mailpassword"/>
             </mail-session>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
@@ -329,15 +332,8 @@
                         <login-module code="Remoting" flag="optional">
                             <module-option name="password-stacking" value="useFirstPass"/>
                         </login-module>
-                        <login-module code="RealmDirect" flag="optional">
+                        <login-module code="RealmDirect" flag="required">
                             <module-option name="password-stacking" value="useFirstPass"/>
-                        </login-module>
-                        <login-module code="Database" flag="required">
-                            <module-option name="dsJndiName" value="java:/datasources/rod"/>
-                            <module-option name="principalsQuery" value="SELECT password FROM users WHERE login = ?"/>
-                            <module-option name="rolesQuery" value="SELECT name, 'Roles' FROM roles r inner join user_role_map urm on urm.role_id = r.id inner join users u on urm.user_id = u.id  WHERE login = ?"/>
-                            <module-option name="hashAlgorithm" value="MD5"/>
-                            <module-option name="hashEncoding" value="hex"/>
                         </login-module>
                     </authentication>
                 </security-domain>
@@ -423,8 +419,16 @@
         <socket-binding name="txn-recovery-environment" port="4712"/>
         <socket-binding name="txn-status-manager" port="4713"/>
         <outbound-socket-binding name="mail-smtp">
-            <remote-destination host="localhost" port="25"/>
+            <remote-destination host="smtp.mail.ru" port="25"/>
+        </outbound-socket-binding>
+        <outbound-socket-binding name="rod-mail" source-port="0" fixed-source-port="false">
+            <remote-destination host="smtp.mail.ru" port="465"/>
         </outbound-socket-binding>
     </socket-binding-group>
 
+    <deployments>
+        <deployment name="postgresql-9.4-1203.jdbc42.jar" runtime-name="postgresql-9.4-1203.jdbc42.jar">
+            <content sha1="65ac0ddf4fc218856a7c992bfd01e4ee0536b8dd"/>
+        </deployment>
+    </deployments>
 </server>
